@@ -331,6 +331,11 @@
   </div>
 
   <p class="nota-login" id="nota-login">¿Eres docente? Cambia arriba para ingresar con tu correo</p>
+
+  <!-- Panel de diagnóstico (quitar después de resolver) -->
+  <div id="diagnostico" style="margin:18px auto;max-width:380px;padding:12px 16px;border-radius:10px;background:#FFF8E1;border:1.5px solid #FFD54F;font-size:12px;font-family:monospace;color:#5D4037;word-break:break-all;">
+    ⏳ Probando conexión con el servidor...
+  </div>
 </section>
 
 <!-- ====================== PANTALLA: PANEL DOCENTE ====================== -->
@@ -503,7 +508,7 @@
    IMPORTANTE: reemplaza la siguiente URL con la que te entrega Google
    al implementar tu Apps Script como aplicación web. Ver README.
 */
-const API_URL = 'https://script.google.com/macros/s/AKfycbym0IHD2U01Br9RzAMoMuGpVw8UFkcX2BJnjXhEy0w7cqS3qrSH_yJRETKgzaaDtn3O/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyu4sg8VDPV_qIX_RDnYS3qDCqzLi6WS1kbjcp4tFUosqct_CSSjJQ54zDUlvwYIXoF/exec';
 
 /* ---------------- Estado en memoria ---------------- */
 let estado = {
@@ -637,7 +642,7 @@ function entrarComoEstudiante() {
       estado.estudiante = { nombre, curso: resp.curso, codigo };
       abrirPanelEstudiante();
     })
-    .catch(() => mostrarError('error-estudiante', 'No se pudo conectar. Revisa tu internet e intenta otra vez.'))
+    .catch(err => mostrarError('error-estudiante', 'Error: ' + err.message))
     .finally(() => { boton.disabled = false; boton.textContent = 'Entrar a mi clase'; });
 }
 
@@ -658,13 +663,17 @@ function entrarComoDocente() {
   llamarAPI({ accion: 'loginDocente', correo, clave })
     .then(resp => {
       if (!resp.ok) {
-        mostrarError('error-docente', resp.error);
+        mostrarError('error-docente', resp.error || 'Respuesta inesperada: ' + JSON.stringify(resp));
+        return;
+      }
+      if (!resp.docente) {
+        mostrarError('error-docente', 'El servidor respondió OK pero no envió datos de docente. ¿Actualizaste el Code.gs y creaste un NUEVO despliegue?');
         return;
       }
       estado.docente = resp.docente;
       abrirPanelDocente();
     })
-    .catch(() => mostrarError('error-docente', 'No se pudo conectar. Revisa tu internet e intenta otra vez.'))
+    .catch(err => mostrarError('error-docente', 'Error: ' + err.message))
     .finally(() => { boton.disabled = false; boton.textContent = 'Entrar al panel'; });
 }
 
@@ -1048,6 +1057,44 @@ function filaContenidoEstudianteHTML(item) {
 
 /* ---------------- Inicio ---------------- */
 cambiarRol('estudiante');
+
+/* ======== DIAGNÓSTICO (quitar después de resolver) ======== */
+(function diagnosticoInicial() {
+  var panel = document.getElementById('diagnostico');
+  if (!panel) return;
+
+  // 1. Probar conexión básica (GET sin payload = saludo)
+  fetch(API_URL, { method: 'GET', redirect: 'follow' })
+    .then(function(r) {
+      return r.text().then(function(t) {
+        return { status: r.status, ok: r.ok, type: r.type, body: t };
+      });
+    })
+    .then(function(info) {
+      var msg = '✅ Conexión OK (HTTP ' + info.status + ', type: ' + info.type + ')\n';
+      msg += '📄 Respuesta: ' + info.body.substring(0, 200);
+      panel.textContent = msg;
+      panel.style.background = '#E8F5E9';
+      panel.style.borderColor = '#66BB6A';
+
+      // 2. Probar login real
+      var urlLogin = API_URL + '?payload=' + encodeURIComponent(
+        JSON.stringify({ accion: 'loginDocente', correo: 'docente1@gmail.com', clave: 'docente1' })
+      );
+      return fetch(urlLogin, { method: 'GET', redirect: 'follow' });
+    })
+    .then(function(r) { return r.text(); })
+    .then(function(texto) {
+      panel.textContent += '\n\n🔑 Test login docente1: ' + texto.substring(0, 300);
+    })
+    .catch(function(err) {
+      panel.textContent = '❌ ERROR de conexión: ' + err.message +
+        '\n\n🔗 URL usada: ' + API_URL.substring(0, 80) + '...' +
+        '\n\n💡 Verifica:\n1. Que creaste un NUEVO despliegue en Apps Script\n2. Que el acceso es "Cualquier usuario"\n3. Que pegaste la URL nueva en este archivo';
+      panel.style.background = '#FFEBEE';
+      panel.style.borderColor = '#EF5350';
+    });
+})();
 </script>
 </body>
 </html>
