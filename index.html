@@ -503,7 +503,7 @@
    IMPORTANTE: reemplaza la siguiente URL con la que te entrega Google
    al implementar tu Apps Script como aplicación web. Ver README.
 */
-const API_URL = 'https://script.google.com/macros/s/AKfycbyfvpx-UjjzlRXQmr0wX6uYLb4Oo309tOki5uHdeE_o_Qy_AdAPSWe7xC21CNZ3TaTD/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbym0IHD2U01Br9RzAMoMuGpVw8UFkcX2BJnjXhEy0w7cqS3qrSH_yJRETKgzaaDtn3O/exec';
 
 /* ---------------- Estado en memoria ---------------- */
 let estado = {
@@ -540,26 +540,42 @@ const ETIQUETA_TIPO = {
 /* ---------------- Utilidades ---------------- */
 
 function llamarAPI(cuerpo) {
-  // Nota técnica: a propósito NO se establece manualmente el header
-  // Content-Type. Al omitirlo, el navegador lo trata como una petición
-  // "simple" de formulario y no dispara un preflight OPTIONS, que es lo
-  // que hace que Apps Script falle con "Failed to fetch" cuando la
-  // página vive en un dominio distinto (como GitHub Pages). Apps Script
-  // de todas formas puede leer el contenido crudo desde e.postData.contents
-  // sin problema.
-  return fetch(API_URL, {
-    method: 'POST',
-    body: JSON.stringify(cuerpo)
-  })
-    .then(r => {
+  /*
+   * Estrategia: se usa GET con el JSON codificado como parámetro
+   * ?payload=... para todas las acciones EXCEPTO las de subida de
+   * archivos (que llevan base64 grande). GET evita el problema de
+   * redireccionamiento 302 que tiene POST en Google Apps Script
+   * cuando la petición viene de un dominio distinto (GitHub Pages).
+   *
+   * Para 'subirContenido' se sigue usando POST porque la URL
+   * tendría un tamaño excesivo con el base64 codificado.
+   */
+
+  const usarPost = cuerpo.accion === 'subirContenido';
+
+  const opciones = usarPost
+    ? { method: 'POST', body: JSON.stringify(cuerpo) }
+    : { method: 'GET' };
+
+  const url = usarPost
+    ? API_URL
+    : API_URL + '?payload=' + encodeURIComponent(JSON.stringify(cuerpo));
+
+  return fetch(url, opciones)
+    .then(function (r) {
       if (!r.ok) throw new Error('El servidor respondió con un error (' + r.status + ').');
       return r.text();
     })
-    .then(texto => {
+    .then(function (texto) {
       try {
         return JSON.parse(texto);
       } catch (e) {
-        throw new Error('La respuesta del servidor no se pudo entender. Revisa que la implementación de Apps Script esté activa y con acceso "Cualquier usuario".');
+        throw new Error(
+          'La respuesta del servidor no se pudo entender. ' +
+          'Revisa que la implementación de Apps Script esté activa, ' +
+          'con acceso "Cualquier usuario", y que sea un despliegue NUEVO ' +
+          'después de pegar el código actualizado.'
+        );
       }
     });
 }
