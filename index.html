@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aula Viva</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500;600;700&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --crema:#FDF8F0;
+    --crema-borde:#E5DCC8;
+    --crema-texto-suave:#8A8170;
+    --crema-texto-medio:#6B6354;
+    --verde:#2B4C3F;
+    --verde-claro:#3D6B58;
+    --naranja:#E8743B;
+    --naranja-claro:#FCE9DD;
+    --naranja-oscuro:#993C1D;
+    --amarillo:#F2C572;
+    --amarillo-claro:#FBF1DD;
+    --amarillo-oscuro:#854F0B;
+    --azul:#4A7C9E;
+    --azul-claro:#EAF3FA;
+    --azul-oscuro:#185FA5;
+    --texto:#2B2A26;
+    --blanco:#FFFFFF;
+    --error:#A32D2D;
+    --error-fondo:#FCEBEB;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Nunito', sans-serif;
+    background:var(--crema);
+    color:var(--texto);
+    min-height:100vh;
+  }
+  h1,h2,h3,.titulo-display{
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+  }
+  .pantalla{display:none;}
+  .pantalla.activa{display:block;}
+  .oculto{display:none !important;}
+
+  /* ---------- LOGIN ---------- */
+  #pantalla-login{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:32px 20px;
+  }
+  .logo-marca{display:flex;align-items:center;gap:10px;margin-bottom:28px;}
+  .logo-icono{
+    width:42px;height:42px;border-radius:11px;background:var(--naranja);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .logo-icono svg{width:24px;height:24px;}
+  .logo-texto{font-size:22px;color:var(--verde);}
+
+  .selector-rol{
+    display:flex;gap:6px;background:var(--amarillo-claro);
+    border-radius:13px;padding:4px;margin-bottom:24px;
+  }
+  .selector-rol button{
+    padding:9px 22px;border-radius:10px;border:none;background:transparent;
+    font-family:'Nunito',sans-serif;font-size:13.5px;font-weight:600;
+    color:var(--crema-texto-suave);cursor:pointer;transition:background .15s, color .15s;
+  }
+  .selector-rol button.activo{background:var(--blanco);color:var(--verde);}
+
+  .tarjeta-login{
+    width:100%;max-width:340px;background:var(--blanco);
+    border:1px solid var(--crema-borde);border-radius:18px;padding:26px;
+  }
+  .tarjeta-login p.titulo-form{font-size:15px;font-weight:700;text-align:center;margin:0 0 4px;font-family:'Quicksand',sans-serif;}
+  .tarjeta-login p.sub-form{font-size:12.5px;color:var(--crema-texto-suave);text-align:center;margin:0 0 18px;}
+
+  label.etiqueta-campo{font-size:12.5px;color:var(--crema-texto-medio);font-weight:600;display:block;margin-bottom:5px;}
+  .campo-input{
+    border:1px solid var(--crema-borde);border-radius:11px;padding:11px 14px;
+    margin-bottom:14px;display:flex;align-items:center;gap:8px;background:var(--crema);
+  }
+  .campo-input input{
+    border:none;background:transparent;outline:none;font-size:14px;width:100%;
+    font-family:'Nunito',sans-serif;color:var(--texto);
+  }
+  .campo-input svg{flex-shrink:0;opacity:.55;}
+
+  .boton-principal{
+    width:100%;background:var(--naranja);border:none;border-radius:11px;padding:13px;
+    text-align:center;font-family:'Nunito',sans-serif;font-size:14.5px;font-weight:700;
+    color:var(--crema);cursor:pointer;transition:filter .15s;
+  }
+  .boton-principal:hover{filter:brightness(1.06);}
+  .boton-principal:disabled{opacity:.6;cursor:wait;}
+
+  .nota-login{font-size:11.5px;color:#B6AE97;margin-top:16px;text-align:center;}
+  .mensaje-error{
+    background:var(--error-fondo);color:var(--error);font-size:12.5px;
+    padding:9px 12px;border-radius:9px;margin-bottom:14px;display:none;
+  }
+
+  /* ---------- ENCABEZADO COMÚN ---------- */
+  .barra-superior{
+    padding:16px 22px;display:flex;align-items:center;justify-content:space-between;
+  }
+  .barra-superior.docente{background:var(--verde);}
+  .barra-superior.estudiante{background:var(--azul);}
+  .marca-barra{display:flex;align-items:center;gap:10px;}
+  .marca-barra .icono-marca{
+    width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  .barra-superior.docente .icono-marca{background:var(--naranja);}
+  .barra-superior.estudiante .icono-marca{background:var(--amarillo);}
+  .marca-barra .icono-marca svg{width:19px;height:19px;}
+  .nombre-marca{font-size:17px;color:var(--crema);font-family:'Quicksand',sans-serif;font-weight:700;}
+  .info-curso-barra p{margin:0;}
+  .info-curso-barra .titulo-curso-barra{font-size:15px;font-weight:700;color:var(--crema);font-family:'Quicksand',sans-serif;}
+  .info-curso-barra .sub-curso-barra{font-size:11px;color:rgba(253,248,240,.75);margin-top:1px;}
+
+  .lado-derecho-barra{display:flex;align-items:center;gap:10px;}
+  .chip-usuario{font-size:11.5px;padding:4px 10px;border-radius:20px;cursor:pointer;border:none;font-family:'Nunito',sans-serif;font-weight:600;}
+  .barra-superior.docente .chip-usuario{color:var(--amarillo);background:rgba(242,197,114,.15);}
+  .barra-superior.estudiante .chip-usuario{color:var(--crema);background:rgba(253,248,240,.18);}
+  .avatar-circulo{
+    width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+    font-size:12.5px;font-weight:700;flex-shrink:0;font-family:'Quicksand',sans-serif;
+  }
+  .barra-superior.docente .avatar-circulo{background:var(--amarillo);color:var(--verde);}
+  .barra-superior.estudiante .avatar-circulo{background:var(--amarillo);color:var(--verde);}
+  .boton-volver{
+    background:transparent;border:none;cursor:pointer;display:flex;align-items:center;gap:5px;
+    color:var(--crema);font-family:'Nunito',sans-serif;font-size:12.5px;font-weight:600;opacity:.85;
+  }
+
+  /* ---------- PANEL DOCENTE ---------- */
+  .contenedor-panel{padding:22px 22px 40px;max-width:760px;margin:0 auto;}
+  .pestanas-nivel{display:flex;gap:8px;margin-bottom:22px;border-bottom:1px solid var(--crema-borde);}
+  .pestana-nivel{
+    padding:9px 18px 12px;font-size:14px;color:var(--crema-texto-suave);cursor:pointer;
+    border:none;background:transparent;border-bottom:3px solid transparent;font-family:'Nunito',sans-serif;font-weight:600;
+  }
+  .pestana-nivel.activa{color:var(--verde);border-bottom-color:var(--naranja);}
+
+  .etiqueta-seccion{
+    font-size:11.5px;color:var(--crema-texto-suave);text-transform:uppercase;
+    letter-spacing:0.6px;margin:0 0 12px;font-weight:700;
+  }
+
+  .grilla-cursos{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:26px;}
+  .tarjeta-curso{background:var(--blanco);border:1px solid var(--crema-borde);border-radius:13px;overflow:hidden;cursor:pointer;transition:border-color .15s;}
+  .tarjeta-curso:hover{border-color:var(--azul);}
+  .cabecera-tarjeta-curso{padding:14px 16px;}
+  .cabecera-tarjeta-curso p.nombre-curso-card{font-size:14px;font-weight:700;color:var(--crema);margin:0;font-family:'Quicksand',sans-serif;}
+  .cabecera-tarjeta-curso p.codigo-curso-card{font-size:11.5px;margin:2px 0 0;letter-spacing:.5px;}
+  .cuerpo-tarjeta-curso{padding:12px 16px;display:flex;gap:10px;font-size:12px;color:var(--crema-texto-medio);align-items:center;}
+  .cuerpo-tarjeta-curso span{display:flex;align-items:center;gap:4px;}
+  .cuerpo-tarjeta-curso svg{width:14px;height:14px;}
+
+  .tarjeta-crear-curso{
+    background:var(--blanco);border:1.5px dashed #C9BFA8;border-radius:13px;
+    display:flex;align-items:center;justify-content:center;min-height:84px;cursor:pointer;
+    color:var(--crema-texto-suave);flex-direction:column;gap:4px;font-size:12.5px;font-weight:600;
+  }
+  .tarjeta-crear-curso:hover{border-color:var(--naranja);color:var(--naranja-oscuro);}
+
+  .lista-contenido{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+  .fila-contenido{
+    background:var(--blanco);border:1px solid var(--crema-borde);border-radius:10px;
+    padding:11px 14px;display:flex;align-items:center;gap:12px;
+  }
+  .icono-tipo{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .icono-tipo svg{width:16px;height:16px;}
+  .info-fila-contenido{flex:1;min-width:0;}
+  .info-fila-contenido p.titulo-item{font-size:13px;font-weight:700;margin:0;font-family:'Nunito',sans-serif;}
+  .info-fila-contenido p.meta-item{font-size:11px;color:var(--crema-texto-suave);margin:2px 0 0;}
+  .acciones-fila{display:flex;gap:6px;flex-shrink:0;}
+  .boton-accion-icono{
+    width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;
+    border:none;cursor:pointer;flex-shrink:0;
+  }
+  .boton-accion-icono svg{width:16px;height:16px;}
+  .boton-accion-icono.ver{background:var(--verde);}
+  .boton-accion-icono.descargar{background:var(--naranja);}
+  .boton-accion-icono.eliminar{background:var(--error-fondo);}
+  .boton-accion-icono.eliminar svg{stroke:var(--error);}
+
+  .barra-subir{
+    background:var(--verde);border-radius:11px;padding:13px 16px;display:flex;
+    align-items:center;gap:10px;cursor:pointer;margin-bottom:18px;border:none;width:100%;
+    font-family:'Nunito',sans-serif;
+  }
+  .barra-subir span{font-size:13.5px;color:#EFE9D8;font-weight:600;}
+
+  .vacio-estado{
+    text-align:center;padding:30px 20px;color:var(--crema-texto-suave);font-size:13px;
+  }
+
+  /* ---------- VISTA ESTUDIANTE ---------- */
+  .aviso-novedad{
+    background:var(--blanco);border:1px solid var(--crema-borde);border-radius:14px;
+    padding:15px 17px;margin-bottom:20px;display:flex;align-items:center;gap:12px;
+  }
+  .icono-aviso{width:38px;height:38px;border-radius:10px;background:var(--amarillo-claro);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .icono-aviso svg{width:18px;height:18px;}
+
+  .grupo-clase{margin-bottom:22px;}
+  .fila-contenido-estudiante{
+    background:var(--blanco);border:1px solid var(--crema-borde);border-radius:14px;
+    padding:13px 15px;display:flex;align-items:center;gap:14px;margin-bottom:10px;
+  }
+  .icono-tipo-grande{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .icono-tipo-grande svg{width:21px;height:21px;}
+  .info-fila-est{flex:1;}
+  .info-fila-est p.titulo-item-est{font-size:14px;font-weight:700;margin:0;font-family:'Nunito',sans-serif;}
+  .info-fila-est p.meta-item-est{font-size:11.5px;color:var(--crema-texto-suave);margin:2px 0 0;}
+
+  /* ---------- MODALES ---------- */
+  .fondo-modal{
+    display:none;position:fixed;inset:0;background:rgba(43,42,38,.45);
+    align-items:center;justify-content:center;padding:20px;z-index:50;
+  }
+  .fondo-modal.activo{display:flex;}
+  .caja-modal{
+    background:var(--crema);border-radius:18px;padding:24px;max-width:420px;width:100%;
+    max-height:88vh;overflow-y:auto;
+  }
+  .caja-modal h3{margin:0 0 16px;font-size:17px;color:var(--verde);}
+  .fila-cierre-modal{display:flex;justify-content:flex-end;margin-bottom:4px;}
+  .boton-cerrar-modal{background:transparent;border:none;cursor:pointer;opacity:.6;padding:4px;}
+  .boton-cerrar-modal svg{width:18px;height:18px;}
+
+  select.campo-select{
+    width:100%;border:1px solid var(--crema-borde);border-radius:11px;padding:11px 14px;
+    margin-bottom:14px;background:var(--crema);font-family:'Nunito',sans-serif;font-size:14px;color:var(--texto);
+  }
+  .grupo-tabs-tipo{display:flex;gap:6px;background:var(--amarillo-claro);border-radius:11px;padding:4px;margin-bottom:16px;}
+  .grupo-tabs-tipo button{
+    flex:1;padding:8px;border-radius:8px;border:none;background:transparent;font-size:12.5px;
+    font-weight:600;color:var(--crema-texto-suave);cursor:pointer;font-family:'Nunito',sans-serif;
+  }
+  .grupo-tabs-tipo button.activo{background:var(--blanco);color:var(--verde);}
+
+  .zona-archivo{
+    border:1.5px dashed var(--crema-borde);border-radius:12px;padding:18px;text-align:center;
+    margin-bottom:6px;cursor:pointer;
+  }
+  .zona-archivo svg{width:22px;height:22px;opacity:.6;margin-bottom:6px;}
+  .zona-archivo p{font-size:12.5px;color:var(--crema-texto-suave);margin:0;}
+  .zona-archivo.con-archivo{border-color:var(--azul);border-style:solid;}
+  .zona-archivo.con-archivo p{color:var(--azul-oscuro);font-weight:600;}
+
+  .texto-ayuda-campo{font-size:11px;color:#B6AE97;margin:-8px 0 14px;}
+
+  .codigo-generado{
+    background:var(--amarillo-claro);border-radius:12px;padding:18px;text-align:center;margin-bottom:6px;
+  }
+  .codigo-generado p.etiqueta-codigo{font-size:12px;color:var(--amarillo-oscuro);margin:0 0 6px;font-weight:600;}
+  .codigo-generado p.valor-codigo{font-size:24px;font-weight:700;color:var(--amarillo-oscuro);margin:0;letter-spacing:2px;font-family:'Quicksand',sans-serif;}
+
+  iframe.video-embed, video.video-embed{
+    width:100%;border-radius:12px;border:none;aspect-ratio:16/9;display:block;
+  }
+
+  @media (max-width:480px){
+    .contenedor-panel{padding:16px 14px 32px;}
+    .barra-superior{padding:14px 16px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ====================== PANTALLA: LOGIN ====================== -->
+<section id="pantalla-login" class="pantalla activa">
+  <div class="logo-marca">
+    <div class="logo-icono">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#FDF8F0" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+    </div>
+    <span class="logo-texto">Aula Viva</span>
+  </div>
+
+  <div class="selector-rol">
+    <button id="boton-rol-estudiante" class="activo" onclick="cambiarRol('estudiante')">Soy estudiante</button>
+    <button id="boton-rol-docente" onclick="cambiarRol('docente')">Soy docente</button>
+  </div>
+
+  <!-- Formulario estudiante -->
+  <div id="formulario-estudiante" class="tarjeta-login">
+    <p class="titulo-form">¡Hola! ¿Cómo te llamas?</p>
+    <p class="sub-form">Pide a tu profe el código de tu curso</p>
+    <div id="error-estudiante" class="mensaje-error"></div>
+
+    <label class="etiqueta-campo">Tu nombre</label>
+    <div class="campo-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/></svg>
+      <input type="text" id="campo-nombre-estudiante" placeholder="Ej. Juan Torres">
+    </div>
+
+    <label class="etiqueta-campo">Código del curso</label>
+    <div class="campo-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="8" cy="15" r="4"/><path d="M10.5 12.5 19 4l2 2-2 2 1 1-2 2-1-1-2.5 2.5"/></svg>
+      <input type="text" id="campo-codigo-estudiante" placeholder="Ej. MAT3A-07" style="text-transform:uppercase;">
+    </div>
+
+    <button class="boton-principal" id="boton-entrar-estudiante" onclick="entrarComoEstudiante()">Entrar a mi clase</button>
+  </div>
+
+  <!-- Formulario docente -->
+  <div id="formulario-docente" class="tarjeta-login oculto">
+    <p class="titulo-form">Ingreso de docentes</p>
+    <p class="sub-form">Usa el correo y clave que te asignaron</p>
+    <div id="error-docente" class="mensaje-error"></div>
+
+    <label class="etiqueta-campo">Correo</label>
+    <div class="campo-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      <input type="email" id="campo-correo-docente" placeholder="docente1@gmail.com">
+    </div>
+
+    <label class="etiqueta-campo">Contraseña</label>
+    <div class="campo-input">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><rect x="4" y="11" width="16" height="9" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+      <input type="password" id="campo-clave-docente" placeholder="••••••••">
+    </div>
+
+    <button class="boton-principal" id="boton-entrar-docente" onclick="entrarComoDocente()">Entrar al panel</button>
+  </div>
+
+  <p class="nota-login" id="nota-login">¿Eres docente? Cambia arriba para ingresar con tu correo</p>
+</section>
+
+<!-- ====================== PANTALLA: PANEL DOCENTE ====================== -->
+<section id="pantalla-docente" class="pantalla">
+  <div class="barra-superior docente">
+    <div class="marca-barra">
+      <div class="icono-marca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FDF8F0" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <span class="nombre-marca">Aula Viva</span>
+    </div>
+    <div class="lado-derecho-barra">
+      <span class="chip-usuario" id="chip-nombre-docente">Profe</span>
+      <button class="chip-usuario" onclick="cerrarSesion()" style="cursor:pointer;">Salir</button>
+    </div>
+  </div>
+
+  <div class="contenedor-panel">
+    <div class="pestanas-nivel">
+      <button class="pestana-nivel activa" data-nivel="tercero" onclick="cambiarNivel('tercero')">Tercero</button>
+      <button class="pestana-nivel" data-nivel="cuarto" onclick="cambiarNivel('cuarto')">Cuarto</button>
+      <button class="pestana-nivel" data-nivel="quinto" onclick="cambiarNivel('quinto')">Quinto</button>
+    </div>
+
+    <p class="etiqueta-seccion" id="titulo-seccion-cursos">Mis cursos · tercero de primaria</p>
+    <div class="grilla-cursos" id="grilla-cursos">
+      <!-- Tarjetas de curso renderizadas por JS -->
+    </div>
+
+    <div id="seccion-curso-abierto" class="oculto">
+      <p class="etiqueta-seccion" id="titulo-contenido-curso">Contenido del curso</p>
+      <div class="lista-contenido" id="lista-contenido-docente"></div>
+      <button class="barra-subir" onclick="abrirModalSubir()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#F2C572" stroke-width="2" width="16" height="16"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+        <span id="texto-barra-subir">Subir contenido nuevo</span>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ====================== PANTALLA: VISTA ESTUDIANTE ====================== -->
+<section id="pantalla-estudiante" class="pantalla">
+  <div class="barra-superior estudiante">
+    <div class="marca-barra">
+      <div class="icono-marca">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2B4C3F" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><path d="M9 7h6M9 11h6M9 15h3"/></svg>
+      </div>
+      <div class="info-curso-barra">
+        <p class="titulo-curso-barra" id="nombre-curso-estudiante">Mi curso</p>
+        <p class="sub-curso-barra" id="sub-curso-estudiante">Profe · nivel</p>
+      </div>
+    </div>
+    <div class="lado-derecho-barra">
+      <button class="boton-volver" onclick="cerrarSesion()">Salir</button>
+      <div class="avatar-circulo" id="avatar-estudiante">JT</div>
+    </div>
+  </div>
+
+  <div class="contenedor-panel" id="contenedor-contenido-estudiante">
+    <!-- Renderizado por JS -->
+  </div>
+</section>
+
+<!-- ====================== MODAL: CREAR CURSO ====================== -->
+<div class="fondo-modal" id="modal-crear-curso">
+  <div class="caja-modal">
+    <div class="fila-cierre-modal">
+      <button class="boton-cerrar-modal" onclick="cerrarModal('modal-crear-curso')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <h3>Crear nuevo curso</h3>
+    <div id="vista-formulario-crear">
+      <label class="etiqueta-campo">Nombre del curso</label>
+      <div class="campo-input">
+        <input type="text" id="campo-nombre-curso" placeholder="Ej. Matemáticas 3A">
+      </div>
+      <label class="etiqueta-campo">Nivel</label>
+      <select class="campo-select" id="campo-nivel-curso">
+        <option value="tercero">Tercero de primaria</option>
+        <option value="cuarto">Cuarto de primaria</option>
+        <option value="quinto">Quinto de primaria</option>
+      </select>
+      <button class="boton-principal" id="boton-confirmar-crear-curso" onclick="confirmarCrearCurso()">Crear curso</button>
+    </div>
+    <div id="vista-codigo-generado" class="oculto">
+      <p style="font-size:13px;color:var(--crema-texto-medio);margin:0 0 12px;">Tu curso fue creado. Comparte este código con tus estudiantes para que entren:</p>
+      <div class="codigo-generado">
+        <p class="etiqueta-codigo">Código de acceso</p>
+        <p class="valor-codigo" id="texto-codigo-generado">MAT3A-07</p>
+      </div>
+      <button class="boton-principal" style="margin-top:16px;" onclick="cerrarModal('modal-crear-curso')">Listo</button>
+    </div>
+  </div>
+</div>
+
+<!-- ====================== MODAL: SUBIR CONTENIDO ====================== -->
+<div class="fondo-modal" id="modal-subir-contenido">
+  <div class="caja-modal">
+    <div class="fila-cierre-modal">
+      <button class="boton-cerrar-modal" onclick="cerrarModal('modal-subir-contenido')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <h3>Subir contenido</h3>
+    <div id="error-subir" class="mensaje-error"></div>
+
+    <label class="etiqueta-campo">Tipo de contenido</label>
+    <div class="grupo-tabs-tipo">
+      <button class="activo" data-tipo="pdf" onclick="cambiarTipoContenido('pdf')">PDF</button>
+      <button data-tipo="presentacion" onclick="cambiarTipoContenido('presentacion')">Presentación</button>
+      <button data-tipo="audio" onclick="cambiarTipoContenido('audio')">Audio</button>
+      <button data-tipo="video" onclick="cambiarTipoContenido('video')">Video</button>
+    </div>
+
+    <!-- Sub-selector solo visible si tipo = video -->
+    <div id="subtabs-video" class="grupo-tabs-tipo oculto">
+      <button class="activo" data-subtipo="archivo" onclick="cambiarSubtipoVideo('archivo')">Subir archivo</button>
+      <button data-subtipo="youtube" onclick="cambiarSubtipoVideo('youtube')">Link de YouTube</button>
+    </div>
+
+    <label class="etiqueta-campo">Clase / sesión</label>
+    <div class="campo-input">
+      <input type="text" id="campo-clase-contenido" placeholder="Ej. Clase 5 · tablas de multiplicar">
+    </div>
+
+    <label class="etiqueta-campo">Título del contenido</label>
+    <div class="campo-input">
+      <input type="text" id="campo-titulo-contenido" placeholder="Ej. Repaso tablas de multiplicar">
+    </div>
+
+    <div id="bloque-campo-archivo">
+      <label class="etiqueta-campo">Archivo</label>
+      <div class="zona-archivo" id="zona-archivo" onclick="document.getElementById('campo-archivo').click()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 16V4"/><path d="m6 10 6-6 6 6"/><path d="M5 20h14"/></svg>
+        <p id="texto-zona-archivo">Toca para elegir un archivo (máx. 25 MB)</p>
+      </div>
+      <input type="file" id="campo-archivo" class="oculto" onchange="archivoSeleccionado(this)">
+      <p class="texto-ayuda-campo">PDF, PPTX, MP3 o MP4 según el tipo elegido arriba.</p>
+    </div>
+
+    <div id="bloque-campo-youtube" class="oculto">
+      <label class="etiqueta-campo">Link de YouTube</label>
+      <div class="campo-input">
+        <input type="text" id="campo-link-youtube" placeholder="https://youtube.com/watch?v=...">
+      </div>
+    </div>
+
+    <button class="boton-principal" id="boton-confirmar-subir" onclick="confirmarSubirContenido()">Subir contenido</button>
+  </div>
+</div>
+
+<!-- ====================== MODAL: VISOR DE CONTENIDO ====================== -->
+<div class="fondo-modal" id="modal-visor">
+  <div class="caja-modal" style="max-width:600px;">
+    <div class="fila-cierre-modal">
+      <button class="boton-cerrar-modal" onclick="cerrarModal('modal-visor')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <h3 id="titulo-visor">Contenido</h3>
+    <div id="cuerpo-visor"></div>
+  </div>
+</div>
+
+<script>
+/* ====================================================================
+   AULA VIVA — Frontend
+   ====================================================================
+   IMPORTANTE: reemplaza la siguiente URL con la que te entrega Google
+   al implementar tu Apps Script como aplicación web. Ver README.
+*/
+const API_URL = 'https://script.google.com/macros/s/AKfycbyfvpx-UjjzlRXQmr0wX6uYLb4Oo309tOki5uHdeE_o_Qy_AdAPSWe7xC21CNZ3TaTD/exec';
+
+/* ---------------- Estado en memoria ---------------- */
+let estado = {
+  rolActivo: 'estudiante',
+  docente: null,          // { correo, nombre }
+  estudiante: null,       // { nombre, curso: {id, nombre, nivel}, codigo }
+  nivelActivo: 'tercero',
+  cursosDocente: [],
+  cursoAbierto: null,     // curso del docente actualmente expandido
+  tipoContenidoModal: 'pdf',
+  subtipoVideoModal: 'archivo',
+  archivoEnMemoria: null  // { base64, nombre, mimeType }
+};
+
+const ICONOS = {
+  pdf: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z"/><path d="M14 2v6h6"/></svg>',
+  presentacion: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="12" rx="1"/><path d="M8 20h8M12 16v4"/></svg>',
+  audio: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  video: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="m17 10 5-3v10l-5-3"/></svg>',
+  video_youtube: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="15" height="14" rx="2"/><path d="m17 10 5-3v10l-5-3"/></svg>'
+};
+const COLOR_FONDO_ICONO = {
+  pdf:'var(--naranja-claro)', presentacion:'var(--amarillo-claro)', audio:'var(--azul-claro)',
+  video:'var(--azul-claro)', video_youtube:'var(--azul-claro)'
+};
+const COLOR_ICONO = {
+  pdf:'var(--naranja-oscuro)', presentacion:'var(--amarillo-oscuro)', audio:'var(--azul-oscuro)',
+  video:'var(--azul-oscuro)', video_youtube:'var(--azul-oscuro)'
+};
+const ETIQUETA_TIPO = {
+  pdf:'PDF', presentacion:'Presentación', audio:'Audio', video:'Video', video_youtube:'Video de YouTube'
+};
+
+/* ---------------- Utilidades ---------------- */
+
+function llamarAPI(cuerpo) {
+  return fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+    body: JSON.stringify(cuerpo)
+  }).then(r => r.json());
+}
+
+function mostrarError(idElemento, mensaje) {
+  const el = document.getElementById(idElemento);
+  el.textContent = mensaje;
+  el.style.display = 'block';
+}
+function ocultarError(idElemento) {
+  document.getElementById(idElemento).style.display = 'none';
+}
+
+function iniciales(nombreCompleto) {
+  return nombreCompleto.trim().split(/\s+/).slice(0,2).map(p => p[0].toUpperCase()).join('');
+}
+
+function abrirModal(id){ document.getElementById(id).classList.add('activo'); }
+function cerrarModal(id){ document.getElementById(id).classList.remove('activo'); }
+
+function cambiarPantalla(idPantalla) {
+  document.querySelectorAll('.pantalla').forEach(p => p.classList.remove('activa'));
+  document.getElementById(idPantalla).classList.add('activa');
+}
+
+/* ---------------- LOGIN ---------------- */
+
+function cambiarRol(rol) {
+  estado.rolActivo = rol;
+  document.getElementById('boton-rol-estudiante').classList.toggle('activo', rol === 'estudiante');
+  document.getElementById('boton-rol-docente').classList.toggle('activo', rol === 'docente');
+  document.getElementById('formulario-estudiante').classList.toggle('oculto', rol !== 'estudiante');
+  document.getElementById('formulario-docente').classList.toggle('oculto', rol !== 'docente');
+  document.getElementById('nota-login').textContent = rol === 'estudiante'
+    ? '¿Eres docente? Cambia arriba para ingresar con tu correo'
+    : '¿Eres estudiante? Cambia arriba para entrar con el código de tu curso';
+}
+
+function entrarComoEstudiante() {
+  const nombre = document.getElementById('campo-nombre-estudiante').value.trim();
+  const codigo = document.getElementById('campo-codigo-estudiante').value.trim().toUpperCase();
+  ocultarError('error-estudiante');
+
+  if (!nombre || !codigo) {
+    mostrarError('error-estudiante', 'Escribe tu nombre y el código del curso.');
+    return;
+  }
+
+  const boton = document.getElementById('boton-entrar-estudiante');
+  boton.disabled = true;
+  boton.textContent = 'Entrando...';
+
+  llamarAPI({ accion: 'validarCodigoCurso', codigo })
+    .then(resp => {
+      if (!resp.ok) {
+        mostrarError('error-estudiante', resp.error);
+        return;
+      }
+      estado.estudiante = { nombre, curso: resp.curso, codigo };
+      abrirPanelEstudiante();
+    })
+    .catch(() => mostrarError('error-estudiante', 'No se pudo conectar. Revisa tu internet e intenta otra vez.'))
+    .finally(() => { boton.disabled = false; boton.textContent = 'Entrar a mi clase'; });
+}
+
+function entrarComoDocente() {
+  const correo = document.getElementById('campo-correo-docente').value.trim().toLowerCase();
+  const clave = document.getElementById('campo-clave-docente').value;
+  ocultarError('error-docente');
+
+  if (!correo || !clave) {
+    mostrarError('error-docente', 'Escribe tu correo y tu contraseña.');
+    return;
+  }
+
+  const boton = document.getElementById('boton-entrar-docente');
+  boton.disabled = true;
+  boton.textContent = 'Entrando...';
+
+  llamarAPI({ accion: 'loginDocente', correo, clave })
+    .then(resp => {
+      if (!resp.ok) {
+        mostrarError('error-docente', resp.error);
+        return;
+      }
+      estado.docente = resp.docente;
+      abrirPanelDocente();
+    })
+    .catch(() => mostrarError('error-docente', 'No se pudo conectar. Revisa tu internet e intenta otra vez.'))
+    .finally(() => { boton.disabled = false; boton.textContent = 'Entrar al panel'; });
+}
+
+function cerrarSesion() {
+  estado.docente = null;
+  estado.estudiante = null;
+  estado.cursoAbierto = null;
+  document.getElementById('campo-nombre-estudiante').value = '';
+  document.getElementById('campo-codigo-estudiante').value = '';
+  document.getElementById('campo-correo-docente').value = '';
+  document.getElementById('campo-clave-docente').value = '';
+  cambiarPantalla('pantalla-login');
+}
+
+/* ---------------- PANEL DOCENTE ---------------- */
+
+function abrirPanelDocente() {
+  document.getElementById('chip-nombre-docente').textContent = estado.docente.nombre;
+  cambiarPantalla('pantalla-docente');
+  document.getElementById('seccion-curso-abierto').classList.add('oculto');
+  cargarCursosDocente();
+}
+
+function cambiarNivel(nivel) {
+  estado.nivelActivo = nivel;
+  document.querySelectorAll('.pestana-nivel').forEach(b => b.classList.toggle('activa', b.dataset.nivel === nivel));
+  const etiquetas = { tercero:'tercero', cuarto:'cuarto', quinto:'quinto' };
+  document.getElementById('titulo-seccion-cursos').textContent = 'Mis cursos · ' + etiquetas[nivel] + ' de primaria';
+  document.getElementById('seccion-curso-abierto').classList.add('oculto');
+  renderizarCursosDocente();
+}
+
+function cargarCursosDocente() {
+  document.getElementById('grilla-cursos').innerHTML = '<p class="vacio-estado">Cargando cursos...</p>';
+  llamarAPI({ accion: 'obtenerCursosDocente', docenteEmail: estado.docente.correo })
+    .then(resp => {
+      if (resp.ok) {
+        estado.cursosDocente = resp.cursos;
+        renderizarCursosDocente();
+      }
+    });
+}
+
+function renderizarCursosDocente() {
+  const cursosDelNivel = estado.cursosDocente.filter(c => c.nivel === estado.nivelActivo);
+  const grilla = document.getElementById('grilla-cursos');
+
+  const coloresCabecera = ['var(--azul)', 'var(--naranja)', 'var(--verde-claro)'];
+
+  grilla.innerHTML = cursosDelNivel.map((curso, i) => `
+    <div class="tarjeta-curso" onclick="abrirCursoDocente('${curso.id}')">
+      <div class="cabecera-tarjeta-curso" style="background:${coloresCabecera[i % coloresCabecera.length]};">
+        <p class="nombre-curso-card">${escaparHtml(curso.nombre)}</p>
+        <p class="codigo-curso-card" style="color:rgba(253,248,240,.8);">Código: ${curso.codigo}</p>
+      </div>
+      <div class="cuerpo-tarjeta-curso">
+        <span>Ver contenido →</span>
+      </div>
+    </div>
+  `).join('') + `
+    <div class="tarjeta-crear-curso" onclick="abrirModalCrearCurso()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><path d="M12 5v14M5 12h14"/></svg>
+      <p style="margin:0;">Crear curso</p>
+    </div>
+  `;
+}
+
+function escaparHtml(texto) {
+  const d = document.createElement('div');
+  d.textContent = texto;
+  return d.innerHTML;
+}
+
+function abrirModalCrearCurso() {
+  document.getElementById('campo-nombre-curso').value = '';
+  document.getElementById('campo-nivel-curso').value = estado.nivelActivo;
+  document.getElementById('vista-formulario-crear').classList.remove('oculto');
+  document.getElementById('vista-codigo-generado').classList.add('oculto');
+  abrirModal('modal-crear-curso');
+}
+
+function confirmarCrearCurso() {
+  const nombre = document.getElementById('campo-nombre-curso').value.trim();
+  const nivel = document.getElementById('campo-nivel-curso').value;
+  if (!nombre) return;
+
+  const boton = document.getElementById('boton-confirmar-crear-curso');
+  boton.disabled = true;
+  boton.textContent = 'Creando...';
+
+  llamarAPI({ accion: 'crearCurso', docenteEmail: estado.docente.correo, nivel, nombre })
+    .then(resp => {
+      if (resp.ok) {
+        estado.cursosDocente.push(resp.curso);
+        if (resp.curso.nivel === estado.nivelActivo) renderizarCursosDocente();
+        document.getElementById('texto-codigo-generado').textContent = resp.curso.codigo;
+        document.getElementById('vista-formulario-crear').classList.add('oculto');
+        document.getElementById('vista-codigo-generado').classList.remove('oculto');
+      }
+    })
+    .finally(() => { boton.disabled = false; boton.textContent = 'Crear curso'; });
+}
+
+function abrirCursoDocente(cursoId) {
+  const curso = estado.cursosDocente.find(c => c.id === cursoId);
+  estado.cursoAbierto = curso;
+  document.getElementById('seccion-curso-abierto').classList.remove('oculto');
+  document.getElementById('titulo-contenido-curso').textContent = curso.nombre + ' · código ' + curso.codigo;
+  document.getElementById('texto-barra-subir').textContent = 'Subir contenido nuevo a ' + curso.nombre;
+  cargarContenidoDocente();
+}
+
+function cargarContenidoDocente() {
+  const lista = document.getElementById('lista-contenido-docente');
+  lista.innerHTML = '<p class="vacio-estado">Cargando contenido...</p>';
+
+  llamarAPI({ accion: 'obtenerContenidoCurso', codigo: estado.cursoAbierto.codigo })
+    .then(resp => {
+      if (!resp.ok) { lista.innerHTML = '<p class="vacio-estado">' + resp.error + '</p>'; return; }
+      if (resp.contenido.length === 0) {
+        lista.innerHTML = '<p class="vacio-estado">Todavía no has subido nada a este curso. Usa el botón de abajo para empezar.</p>';
+        return;
+      }
+      lista.innerHTML = resp.contenido.map(item => filaContenidoDocenteHTML(item)).join('');
+    });
+}
+
+function filaContenidoDocenteHTML(item) {
+  return `
+    <div class="fila-contenido">
+      <div class="icono-tipo" style="background:${COLOR_FONDO_ICONO[item.tipo]};color:${COLOR_ICONO[item.tipo]};">
+        ${ICONOS[item.tipo]}
+      </div>
+      <div class="info-fila-contenido">
+        <p class="titulo-item">${escaparHtml(item.titulo)}</p>
+        <p class="meta-item">${ETIQUETA_TIPO[item.tipo]} · ${escaparHtml(item.clase)}</p>
+      </div>
+      <div class="acciones-fila">
+        <button class="boton-accion-icono ver" onclick="verContenido('${item.id}','${item.tipo}','${item.url}','${escaparHtml(item.titulo)}')" aria-label="Ver">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FDF8F0" stroke-width="2"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+        <button class="boton-accion-icono eliminar" onclick="confirmarEliminarContenido('${item.id}')" aria-label="Eliminar">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+}
+
+function confirmarEliminarContenido(contenidoId) {
+  if (!confirm('¿Eliminar este contenido? Los estudiantes ya no podrán verlo.')) return;
+  llamarAPI({ accion: 'eliminarContenido', contenidoId, docenteEmail: estado.docente.correo })
+    .then(resp => { if (resp.ok) cargarContenidoDocente(); });
+}
+
+/* ---------------- MODAL SUBIR CONTENIDO ---------------- */
+
+function abrirModalSubir() {
+  document.getElementById('campo-clase-contenido').value = '';
+  document.getElementById('campo-titulo-contenido').value = '';
+  document.getElementById('campo-link-youtube').value = '';
+  document.getElementById('campo-archivo').value = '';
+  document.getElementById('texto-zona-archivo').textContent = 'Toca para elegir un archivo (máx. 25 MB)';
+  document.getElementById('zona-archivo').classList.remove('con-archivo');
+  estado.archivoEnMemoria = null;
+  ocultarError('error-subir');
+  cambiarTipoContenido('pdf');
+  abrirModal('modal-subir-contenido');
+}
+
+function cambiarTipoContenido(tipo) {
+  estado.tipoContenidoModal = tipo;
+  document.querySelectorAll('#modal-subir-contenido .grupo-tabs-tipo button[data-tipo]').forEach(b => {
+    b.classList.toggle('activo', b.dataset.tipo === tipo);
+  });
+  const esVideo = tipo === 'video';
+  document.getElementById('subtabs-video').classList.toggle('oculto', !esVideo);
+  cambiarSubtipoVideo('archivo');
+  actualizarVisibilidadCamposArchivo();
+}
+
+function cambiarSubtipoVideo(subtipo) {
+  estado.subtipoVideoModal = subtipo;
+  document.querySelectorAll('#subtabs-video button[data-subtipo]').forEach(b => {
+    b.classList.toggle('activo', b.dataset.subtipo === subtipo);
+  });
+  actualizarVisibilidadCamposArchivo();
+}
+
+function actualizarVisibilidadCamposArchivo() {
+  const esVideoYoutube = estado.tipoContenidoModal === 'video' && estado.subtipoVideoModal === 'youtube';
+  document.getElementById('bloque-campo-archivo').classList.toggle('oculto', esVideoYoutube);
+  document.getElementById('bloque-campo-youtube').classList.toggle('oculto', !esVideoYoutube);
+
+  const aceptados = { pdf:'.pdf', presentacion:'.ppt,.pptx,.pdf', audio:'.mp3,.wav,.m4a', video:'.mp4,.mov,.webm' };
+  document.getElementById('campo-archivo').setAttribute('accept', aceptados[estado.tipoContenidoModal] || '');
+}
+
+function archivoSeleccionado(input) {
+  const archivo = input.files[0];
+  if (!archivo) return;
+
+  if (archivo.size > 25 * 1024 * 1024) {
+    mostrarError('error-subir', 'Ese archivo pesa más de 25 MB. Elige uno más liviano.');
+    input.value = '';
+    return;
+  }
+  ocultarError('error-subir');
+
+  const lector = new FileReader();
+  lector.onload = () => {
+    const base64 = lector.result.split(',')[1];
+    estado.archivoEnMemoria = { base64, nombre: archivo.name, mimeType: archivo.type || 'application/octet-stream' };
+    document.getElementById('texto-zona-archivo').textContent = archivo.name;
+    document.getElementById('zona-archivo').classList.add('con-archivo');
+  };
+  lector.readAsDataURL(archivo);
+}
+
+function confirmarSubirContenido() {
+  const clase = document.getElementById('campo-clase-contenido').value.trim();
+  const titulo = document.getElementById('campo-titulo-contenido').value.trim();
+  ocultarError('error-subir');
+
+  if (!clase || !titulo) {
+    mostrarError('error-subir', 'Completa la clase y el título.');
+    return;
+  }
+
+  const boton = document.getElementById('boton-confirmar-subir');
+  boton.disabled = true;
+  boton.textContent = 'Subiendo...';
+
+  const esVideoYoutube = estado.tipoContenidoModal === 'video' && estado.subtipoVideoModal === 'youtube';
+
+  let promesa;
+  if (esVideoYoutube) {
+    const urlYoutube = document.getElementById('campo-link-youtube').value.trim();
+    if (!urlYoutube) {
+      mostrarError('error-subir', 'Pega el link de YouTube.');
+      boton.disabled = false; boton.textContent = 'Subir contenido';
+      return;
+    }
+    promesa = llamarAPI({ accion:'agregarVideoYoutube', cursoId: estado.cursoAbierto.id, clase, titulo, urlYoutube });
+  } else {
+    if (!estado.archivoEnMemoria) {
+      mostrarError('error-subir', 'Elige un archivo para subir.');
+      boton.disabled = false; boton.textContent = 'Subir contenido';
+      return;
+    }
+    promesa = llamarAPI({
+      accion: 'subirContenido',
+      docenteEmail: estado.docente.correo,
+      cursoId: estado.cursoAbierto.id,
+      cursoNombre: estado.cursoAbierto.nombre,
+      clase, titulo,
+      tipo: estado.tipoContenidoModal,
+      datosBase64: estado.archivoEnMemoria.base64,
+      nombreArchivo: estado.archivoEnMemoria.nombre,
+      mimeType: estado.archivoEnMemoria.mimeType
+    });
+  }
+
+  promesa
+    .then(resp => {
+      if (!resp.ok) { mostrarError('error-subir', resp.error || 'No se pudo subir el contenido.'); return; }
+      cerrarModal('modal-subir-contenido');
+      cargarContenidoDocente();
+    })
+    .catch(() => mostrarError('error-subir', 'No se pudo conectar. Intenta otra vez.'))
+    .finally(() => { boton.disabled = false; boton.textContent = 'Subir contenido'; });
+}
+
+/* ---------------- VISOR DE CONTENIDO ---------------- */
+
+function verContenido(id, tipo, url, titulo) {
+  document.getElementById('titulo-visor').textContent = titulo;
+  const cuerpo = document.getElementById('cuerpo-visor');
+
+  if (tipo === 'video_youtube') {
+    cuerpo.innerHTML = `<iframe class="video-embed" src="${url}" allowfullscreen></iframe>`;
+  } else if (tipo === 'video') {
+    cuerpo.innerHTML = `<video class="video-embed" controls src="${url}"></video>`;
+  } else if (tipo === 'audio') {
+    cuerpo.innerHTML = `<audio style="width:100%;" controls src="${url}"></audio>`;
+  } else {
+    cuerpo.innerHTML = `
+      <p style="font-size:13px;color:var(--crema-texto-medio);margin-bottom:14px;">Este archivo se abre en una pestaña nueva de Google Drive.</p>
+      <a href="${url}" target="_blank" rel="noopener" class="boton-principal" style="display:block;text-decoration:none;text-align:center;">Abrir / descargar archivo</a>
+    `;
+  }
+  abrirModal('modal-visor');
+}
+
+/* ---------------- VISTA ESTUDIANTE ---------------- */
+
+function abrirPanelEstudiante() {
+  document.getElementById('nombre-curso-estudiante').textContent = estado.estudiante.curso.nombre;
+  document.getElementById('sub-curso-estudiante').textContent =
+    capitalizar(estado.estudiante.curso.nivel) + ' de primaria';
+  document.getElementById('avatar-estudiante').textContent = iniciales(estado.estudiante.nombre);
+  cambiarPantalla('pantalla-estudiante');
+  cargarContenidoEstudiante();
+}
+
+function capitalizar(t){ return t.charAt(0).toUpperCase() + t.slice(1); }
+
+function cargarContenidoEstudiante() {
+  const contenedor = document.getElementById('contenedor-contenido-estudiante');
+  contenedor.innerHTML = '<p class="vacio-estado">Cargando tu contenido...</p>';
+
+  llamarAPI({ accion:'obtenerContenidoCurso', codigo: estado.estudiante.codigo })
+    .then(resp => {
+      if (!resp.ok) { contenedor.innerHTML = '<p class="vacio-estado">' + resp.error + '</p>'; return; }
+
+      if (resp.contenido.length === 0) {
+        contenedor.innerHTML = '<p class="vacio-estado">Tu profe todavía no ha subido nada. ¡Vuelve a revisar luego!</p>';
+        return;
+      }
+
+      const masReciente = resp.contenido[0];
+
+      const grupos = {};
+      const ordenClases = [];
+      resp.contenido.forEach(item => {
+        if (!grupos[item.clase]) { grupos[item.clase] = []; ordenClases.push(item.clase); }
+        grupos[item.clase].push(item);
+      });
+
+      let html = `
+        <div class="aviso-novedad">
+          <div class="icono-aviso">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--amarillo-oscuro)" stroke-width="2"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+          </div>
+          <div>
+            <p style="font-size:13.5px;font-weight:700;margin:0;font-family:'Nunito',sans-serif;">¡Hola, ${escaparHtml(primerNombre(estado.estudiante.nombre))}! Esto hay nuevo de tu profe</p>
+            <p style="font-size:12px;color:var(--crema-texto-suave);margin:2px 0 0;">${escaparHtml(masReciente.titulo)}</p>
+          </div>
+        </div>
+      `;
+
+      ordenClases.forEach(clase => {
+        html += `<div class="grupo-clase"><p class="etiqueta-seccion">${escaparHtml(clase)}</p>`;
+        grupos[clase].forEach(item => { html += filaContenidoEstudianteHTML(item); });
+        html += `</div>`;
+      });
+
+      contenedor.innerHTML = html;
+    });
+}
+
+function primerNombre(nombreCompleto){ return nombreCompleto.trim().split(/\s+/)[0]; }
+
+function filaContenidoEstudianteHTML(item) {
+  const esReproducible = item.tipo === 'video' || item.tipo === 'video_youtube' || item.tipo === 'audio';
+  return `
+    <div class="fila-contenido-estudiante">
+      <div class="icono-tipo-grande" style="background:${COLOR_FONDO_ICONO[item.tipo]};color:${COLOR_ICONO[item.tipo]};">
+        ${ICONOS[item.tipo]}
+      </div>
+      <div class="info-fila-est">
+        <p class="titulo-item-est">${escaparHtml(item.titulo)}</p>
+        <p class="meta-item-est">${ETIQUETA_TIPO[item.tipo]}</p>
+      </div>
+      <div class="acciones-fila">
+        <button class="boton-accion-icono ver" onclick="verContenido('${item.id}','${item.tipo}','${item.url}','${escaparHtml(item.titulo)}')" aria-label="Ver">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FDF8F0" stroke-width="2">
+            ${esReproducible
+              ? '<polygon points="6 4 20 12 6 20 6 4"/>'
+              : '<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7z"/><circle cx="12" cy="12" r="3"/>'}
+          </svg>
+        </button>
+        ${item.tipo !== 'video_youtube' ? `
+        <a class="boton-accion-icono descargar" href="${item.url}" target="_blank" rel="noopener" aria-label="Descargar" style="text-decoration:none;display:flex;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#FDF8F0" stroke-width="2"><path d="M12 16V4"/><path d="m6 10 6 6 6-6"/><path d="M5 20h14"/></svg>
+        </a>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+/* ---------------- Inicio ---------------- */
+cambiarRol('estudiante');
+</script>
+</body>
+</html>
