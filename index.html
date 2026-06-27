@@ -1477,40 +1477,42 @@ function loadFromLocalStorage() {
 async function fetchDataFromSheets() {
   const hasLocal = loadFromLocalStorage();
 
+  // Siempre renderizar con lo que tengamos (local o vacío)
+  renderCurrentPanel();
+
   if (SCRIPT_URL === "TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI") {
-    if (hasLocal) {
-      renderCurrentPanel();
-      showToast('📂 Datos cargados desde almacenamiento local', 'success');
-    } else {
-      renderCurrentPanel();
-      // No toast en carga inicial vacía — es el estado normal
-    }
+    if (hasLocal) showToast('📂 Datos cargados desde almacenamiento local', 'success');
     return;
   }
 
   // Intentar cargar desde Google Sheets
   try {
-    const resp = await fetch(`${SCRIPT_URL}?action=getData`, { method: 'GET' });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const json = await resp.json();
-    const ops = ['suma','resta','multiplicacion','division'];
-    const steps = ['inicio','desarrollo','cierre'];
-    ops.forEach(op => {
-      steps.forEach(step => {
-        if (json[op] && json[op][step]) appData[op][step] = json[op][step];
-      });
+    const resp = await fetch(`${SCRIPT_URL}?action=getData`, {
+      method: 'GET',
+      mode: 'cors',
     });
-    saveToLocalStorage(); // Cache local
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const text = await resp.text();
+    const json = JSON.parse(text);
+
+    if (json.error) throw new Error(json.error);
+
+    const ops   = ['suma','resta','multiplicacion','division'];
+    const steps = ['inicio','desarrollo','cierre'];
+    ops.forEach(op => steps.forEach(step => {
+      if (json[op] && json[op][step] && Object.keys(json[op][step]).length > 0) {
+        appData[op][step] = json[op][step];
+      }
+    }));
+    saveToLocalStorage();
     renderCurrentPanel();
     showToast('✅ Datos sincronizados con Google Sheets', 'success');
   } catch (err) {
-    console.error('[AventurasMat] Error al leer de Sheets:', err);
-    if (hasLocal) {
-      renderCurrentPanel();
-      showToast('📂 Sheets no disponible — usando datos locales', '');
-    } else {
-      renderCurrentPanel();
-      showToast('⚠️ Sin conexión a Sheets. Los datos se guardarán localmente.', '');
+    console.warn('[AventurasMat] Sheets fetch error:', err.message);
+    // Ya renderizamos arriba con datos locales, no hacer nada más
+    if (!hasLocal) {
+      // Solo mostrar aviso si no hay datos locales tampoco
+      console.info('[AventurasMat] Sin datos locales ni Sheets. Estado inicial vacío.');
     }
   }
 }
@@ -1523,32 +1525,41 @@ async function saveDataToSheets() {
   renderCurrentPanel();
 
   if (SCRIPT_URL === "TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI") {
-    if (localOk) {
-      showToast('💾 ¡Guardado! (almacenamiento local del navegador)', 'success');
-    } else {
-      showToast('⚠️ No se pudo guardar. Tu navegador puede tener localStorage desactivado.', 'error');
-    }
+    showToast(localOk ? '💾 ¡Guardado localmente!' : '⚠️ No se pudo guardar.', localOk ? 'success' : 'error');
     return;
   }
 
-  // Intentar sincronizar con Google Sheets
+  // Usar GET con parámetros codificados (evita CORS de preflight)
   const payload = buildAdminPayload();
+  const params = new URLSearchParams({
+    action: 'saveData',
+    op:     adminOp,
+    step:   adminStep,
+    data:   JSON.stringify(payload)
+  });
+
+  // Mostrar estado de carga
+  const saveBtn = document.getElementById('saveBtn');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ Guardando...'; }
+
   try {
-    const resp = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'saveData', op: adminOp, step: adminStep, data: payload }),
+    const resp = await fetch(`${SCRIPT_URL}?${params.toString()}`, {
+      method: 'GET',
+      mode: 'cors',
     });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const json = await resp.json();
     if (json.success) {
-      showToast('✅ Guardado en Google Sheets', 'success');
+      showToast('✅ ¡Guardado en Google Sheets!', 'success');
     } else {
       throw new Error(json.error || 'Error desconocido');
     }
   } catch (err) {
-    console.error('[AventurasMat] Error al guardar en Sheets:', err);
-    showToast(`💾 Guardado local ✓ — Sheets no disponible: ${err.message}`, '');
+    console.error('[AventurasMat] Error Sheets:', err);
+    // Datos ya guardados en localStorage, informar al admin
+    showToast('💾 Guardado local ✓  (Verifica la URL del script en Sheets)', '');
+  } finally {
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Guardar cambios'; }
   }
 }
 
