@@ -1217,9 +1217,10 @@ https://ejemplo.com/guia.pdf"></textarea>
         </div>
 
         <div class="divider"></div>
-        <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;">
+        <div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap;align-items:center;">
           <button class="btn btn-secondary" onclick="loadFromSheets()">🔄 Recargar datos</button>
-          <button class="btn btn-primary" onclick="saveToSheets()">💾 Guardar cambios</button>
+          <button class="btn btn-secondary" onclick="confirmClearData()" style="color:#ef4444;border-color:#fca5a5;">🗑️ Borrar todo</button>
+          <button class="btn btn-primary" id="saveBtn" onclick="saveToSheets()">💾 Guardar cambios</button>
         </div>
 
       </div><!-- /admin-panel-body -->
@@ -1265,7 +1266,9 @@ https://ejemplo.com/guia.pdf"></textarea>
  * 3. Publica como "Web App" → Acceso: "Cualquier usuario".
  * 4. Copia la URL de implementación aquí.
  */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbygpK9X-FyOF--uDozCC56MTAJkADpQ7ZAA8Csubf_3mNt2qfiIM-WJROiwN2M_ZG9OzQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz_CirJvpqq3UrKcyHeCfkxQEXUli2ifJ5UJ6On6Qlk1awNDJsR3yKW-_vC7E3meNDv/exec";
+// Clave usada en localStorage para persistencia local
+const LS_KEY = 'aventuras_mat_data_v1';
 
 // ─────────────────────────────────────────────
 // ESTADO DE LA APLICACIÓN
@@ -1277,13 +1280,16 @@ let adminStep   = 'inicio';
 let isAdmin     = false;
 const ADMIN_PASSWORD = 'admin123'; // Cambia esto en producción
 
-// Datos en memoria (se sobrescriben con la respuesta de Google Sheets)
-const appData = {
+// Estructura vacía base
+const emptyData = () => ({
   suma:           { inicio: {}, desarrollo: {}, cierre: {} },
   resta:          { inicio: {}, desarrollo: {}, cierre: {} },
   multiplicacion: { inicio: {}, desarrollo: {}, cierre: {} },
   division:       { inicio: {}, desarrollo: {}, cierre: {} },
-};
+});
+
+// Datos en memoria — se cargan desde localStorage o Google Sheets
+const appData = emptyData();
 
 const heroContent = {
   suma:           { emoji:'➕', label:'Suma',           title:'Aprendiendo la <span class="accent">Suma</span>',               desc:'Descubre el poder de unir cantidades. La suma es la base de todas las matemáticas que usamos en nuestra vida diaria.' },
@@ -1377,16 +1383,33 @@ function renderDesarrollo(data) {
     return;
   }
 
-  const typeMap = { pdf: ['📄','pdf'], png:['🖼️','img'], jpg:['🖼️','img'], jpeg:['🖼️','img'],
-                    gif:['🖼️','img'], mp3:['🎵','audio'], wav:['🎵','audio'], ogg:['🎵','audio'] };
+  const getIconForUrl = (url) => {
+    const lower = url.toLowerCase();
+    if (lower.endsWith('.pdf')) return ['📄','pdf'];
+    if (lower.match(/\.(png|jpg|jpeg|gif|webp)$/)) return ['🖼️','img'];
+    if (lower.match(/\.(mp3|wav|ogg|m4a)$/)) return ['🎵','audio'];
+    if (lower.match(/\.(mp4|avi|mov|webm)$/)) return ['🎬','img'];
+    // Generic link (educaplay, drive, forms, etc.)
+    return ['🔗','img'];
+  };
+
+  const getName = (r) => {
+    if (r.name && r.name !== r.url && !r.name.startsWith('http')) return r.name;
+    try {
+      const u = new URL(r.url);
+      const parts = u.pathname.split('/').filter(Boolean);
+      const last = parts[parts.length - 1] || u.hostname;
+      return decodeURIComponent(last).replace(/[-_]/g,' ').substring(0,40);
+    } catch(_) { return r.name || 'Recurso'; }
+  };
 
   const cards = resources.map(r => {
-    const ext = (r.url.split('.').pop() || 'file').toLowerCase();
-    const [icon, cls] = typeMap[ext] || ['📎','img'];
+    const [icon, cls] = getIconForUrl(r.url);
+    const name = getName(r);
     return `
       <a href="${r.url}" target="_blank" rel="noopener" class="resource-card">
         <div class="resource-icon ${cls}">${icon}</div>
-        <span class="resource-name">${r.name || 'Recurso'}</span>
+        <span class="resource-name">${name}</span>
       </a>`;
   }).join('');
 
@@ -1414,55 +1437,102 @@ function renderCierre(data) {
 }
 
 // ─────────────────────────────────────────────
+// PERSISTENCIA LOCAL (localStorage)
+// ─────────────────────────────────────────────
+function saveToLocalStorage() {
+  try {
+    localStorage.setItem(LS_KEY, JSON.stringify(appData));
+    return true;
+  } catch(e) {
+    console.warn('[AventurasMat] No se pudo guardar en localStorage:', e);
+    return false;
+  }
+}
+
+function loadFromLocalStorage() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    // Merge saved data into appData safely
+    const ops = ['suma','resta','multiplicacion','division'];
+    const steps = ['inicio','desarrollo','cierre'];
+    ops.forEach(op => {
+      steps.forEach(step => {
+        if (saved[op] && saved[op][step]) {
+          appData[op][step] = saved[op][step];
+        }
+      });
+    });
+    return true;
+  } catch(e) {
+    console.warn('[AventurasMat] No se pudo leer localStorage:', e);
+    return false;
+  }
+}
+
+// ─────────────────────────────────────────────
 // GOOGLE SHEETS — API
 // ─────────────────────────────────────────────
-/**
- * Lee la configuración de contenido desde Google Sheets via Apps Script.
- * El Apps Script debe responder con JSON en el siguiente formato:
- * {
- *   "suma":           { "inicio": { "videoEmbed":"...", "motivation":"..." }, "desarrollo": { "resources":[{"url":"...","name":"..."}] }, "cierre": { "instructions":"...", "formUrl":"...", "btnText":"..." } },
- *   "resta":          { ... },
- *   "multiplicacion": { ... },
- *   "division":       { ... }
- * }
- */
 async function fetchDataFromSheets() {
+  const hasLocal = loadFromLocalStorage();
+
   if (SCRIPT_URL === "TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI") {
-    console.info('[AventurasMat] SCRIPT_URL no configurado. Usando datos de ejemplo.');
-    loadSampleData();
+    if (hasLocal) {
+      renderCurrentPanel();
+      showToast('📂 Datos cargados desde almacenamiento local', 'success');
+    } else {
+      renderCurrentPanel();
+      // No toast en carga inicial vacía — es el estado normal
+    }
     return;
   }
 
+  // Intentar cargar desde Google Sheets
   try {
     const resp = await fetch(`${SCRIPT_URL}?action=getData`, { method: 'GET' });
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const json = await resp.json();
-    Object.assign(appData, json);
+    const ops = ['suma','resta','multiplicacion','division'];
+    const steps = ['inicio','desarrollo','cierre'];
+    ops.forEach(op => {
+      steps.forEach(step => {
+        if (json[op] && json[op][step]) appData[op][step] = json[op][step];
+      });
+    });
+    saveToLocalStorage(); // Cache local
     renderCurrentPanel();
-    showToast('✅ Datos cargados correctamente', 'success');
+    showToast('✅ Datos sincronizados con Google Sheets', 'success');
   } catch (err) {
     console.error('[AventurasMat] Error al leer de Sheets:', err);
-    showToast('⚠️ No se pudieron cargar los datos. Revisa la URL del script.', 'error');
+    if (hasLocal) {
+      renderCurrentPanel();
+      showToast('📂 Sheets no disponible — usando datos locales', '');
+    } else {
+      renderCurrentPanel();
+      showToast('⚠️ Sin conexión a Sheets. Los datos se guardarán localmente.', '');
+    }
   }
 }
 
-/**
- * Guarda la configuración del formulario admin en Google Sheets via Apps Script.
- * El Apps Script debe recibir un POST con body JSON:
- * { "op": "suma", "step": "inicio", "data": { ... } }
- * y responder { "success": true }
- */
 async function saveDataToSheets() {
+  mergeAdminFormToAppData();
+
+  // Siempre guardar en localStorage primero
+  const localOk = saveToLocalStorage();
+  renderCurrentPanel();
+
   if (SCRIPT_URL === "TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI") {
-    // Simular guardado local
-    mergeAdminFormToAppData();
-    renderCurrentPanel();
-    showToast('💾 Guardado localmente (configura SCRIPT_URL para persistir en Sheets)', 'success');
+    if (localOk) {
+      showToast('💾 ¡Guardado! (almacenamiento local del navegador)', 'success');
+    } else {
+      showToast('⚠️ No se pudo guardar. Tu navegador puede tener localStorage desactivado.', 'error');
+    }
     return;
   }
 
+  // Intentar sincronizar con Google Sheets
   const payload = buildAdminPayload();
-
   try {
     const resp = await fetch(SCRIPT_URL, {
       method: 'POST',
@@ -1472,15 +1542,13 @@ async function saveDataToSheets() {
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     const json = await resp.json();
     if (json.success) {
-      mergeAdminFormToAppData();
-      renderCurrentPanel();
-      showToast('✅ Cambios guardados en Google Sheets', 'success');
+      showToast('✅ Guardado en Google Sheets', 'success');
     } else {
       throw new Error(json.error || 'Error desconocido');
     }
   } catch (err) {
     console.error('[AventurasMat] Error al guardar en Sheets:', err);
-    showToast('❌ Error al guardar: ' + err.message, 'error');
+    showToast(`💾 Guardado local ✓ — Sheets no disponible: ${err.message}`, '');
   }
 }
 
@@ -1696,38 +1764,30 @@ function fileIcon(name) {
 }
 
 // ─────────────────────────────────────────────
+// CLEAR DATA
+// ─────────────────────────────────────────────
+function confirmClearData() {
+  if (confirm('¿Estás seguro de que deseas borrar todos los contenidos guardados? Esta acción no se puede deshacer.')) {
+    try { localStorage.removeItem(LS_KEY); } catch(e) {}
+    const ops = ['suma','resta','multiplicacion','division'];
+    const steps = ['inicio','desarrollo','cierre'];
+    ops.forEach(op => steps.forEach(step => { appData[op][step] = {}; }));
+    renderCurrentPanel();
+    populateAdminForm();
+    showToast('🗑️ Todos los datos han sido borrados', '');
+  }
+}
+
+// ─────────────────────────────────────────────
 // TOAST
 // ─────────────────────────────────────────────
 let toastTimer;
-function showToast(msg, type = '') {
+function showToast(msg, type = '', duration = 4000) {
   const t = document.getElementById('toast');
   t.textContent = msg;
   t.className = `toast ${type} show`;
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
-}
-
-// ─────────────────────────────────────────────
-// SAMPLE DATA (when SCRIPT_URL not set)
-// ─────────────────────────────────────────────
-function loadSampleData() {
-  // You can prefill real video/content here for demo purposes
-  appData.suma.inicio = {
-    videoEmbed: 'https://www.youtube.com/embed/7t2Xs4oLlBo',
-    motivation: '¡Las sumas están en todas partes! Desde contar tus monedas hasta calcular distancias. Prepárate para descubrir la magia de unir números.',
-  };
-  appData.suma.desarrollo = {
-    resources: [
-      { url: '#', name: 'Guía de Suma.pdf' },
-      { url: '#', name: 'Infografía Suma.png' },
-    ],
-  };
-  appData.suma.cierre = {
-    instructions: 'Completa el formulario de autoevaluación. Responde con honestidad para que tu docente pueda ayudarte mejor.',
-    formUrl: '#',
-    btnText: 'Ir al formulario de evaluación',
-  };
-  renderCurrentPanel();
+  toastTimer = setTimeout(() => t.classList.remove('show'), duration);
 }
 
 // ─────────────────────────────────────────────
