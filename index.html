@@ -419,63 +419,222 @@
       line-height: 1.6;
     }
 
-    /* Resources grid */
-    .resources-grid {
+    /* ── Desarrollo layout: sidebar + main ── */
+    .dev-layout {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 16px;
+      grid-template-columns: 190px 1fr;
+      gap: 0;
+      min-height: 400px;
     }
-
-    .resource-card {
-      border: 1.5px solid var(--gray-200, #e5e7eb);
-      border-radius: var(--radius-md);
-      padding: 18px 16px;
+    .dev-sidebar {
+      border-right: 1px solid var(--gray-100);
+      padding: 14px 10px;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 10px;
-      text-align: center;
-      transition: all var(--transition);
-      cursor: pointer;
-      text-decoration: none;
+      gap: 8px;
+      background: var(--gray-50);
+      overflow-y: auto;
     }
-
-    .resource-card:hover {
-      border-color: var(--blue-500);
-      box-shadow: 0 4px 14px rgba(43,114,245,.15);
-      transform: translateY(-2px);
+    .dev-sidebar-lbl {
+      font-size: .7rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: .06em; color: var(--gray-500); padding: 0 4px; margin-bottom: 2px;
     }
+    .dev-main { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
 
-    .resource-icon {
-      width: 50px;
-      height: 50px;
+    /* Sidebar resource items (small) */
+    .res-item {
+      display: flex; flex-direction: column;
+      border: 1.5px solid var(--gray-300);
       border-radius: var(--radius-sm);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
+      overflow: hidden; background: var(--white);
+      cursor: pointer; transition: all var(--transition);
     }
-
-    .resource-icon.pdf  { background: #fde8e8; }
-    .resource-icon.img  { background: #e8f5e9; }
-    .resource-icon.audio{ background: #ede7f6; }
-
-    .resource-name {
-      font-size: .82rem;
-      font-weight: 600;
-      color: var(--gray-700);
-      word-break: break-word;
+    .res-item:hover { border-color: var(--blue-500); box-shadow: 0 2px 8px rgba(43,114,245,.12); }
+    .res-item.active { border-color: var(--blue-600); background: var(--blue-50); }
+    .res-item-thumb {
+      width: 100%; aspect-ratio: 16/9;
+      overflow: hidden; background: var(--blue-900);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
     }
+    .res-item-thumb img { width:100%; height:100%; object-fit:cover; display:block; }
+    .res-item-body { padding: 5px 7px; }
+    .res-item-badge { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--gray-500); margin-bottom: 2px; }
+    .res-item.active .res-item-badge { color: var(--blue-600); }
+    .res-item-title { font-size: .75rem; font-weight: 600; color: var(--gray-700); line-height: 1.3; }
+    .res-item.active .res-item-title { color: var(--blue-700); }
 
-    .resource-placeholder {
-      padding: 40px 20px;
-      text-align: center;
-      color: var(--gray-500);
-      border: 2px dashed var(--gray-300);
-      border-radius: var(--radius-md);
-      font-size: .9rem;
+    /* Main area */
+    .main-img-box {
+      width: 100%; aspect-ratio: 16/9;
+      border-radius: var(--radius-md); overflow: hidden;
+      border: 1.5px solid var(--gray-200, #e5e7eb);
+      position: relative; cursor: pointer;
+      background: var(--gray-900);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .main-img-box img { width:100%; height:100%; object-fit:cover; display:block; }
+    .main-img-placeholder {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 10px; width: 100%; height: 100%;
+      background: var(--blue-50);
+    }
+    .main-img-placeholder .mip-icon { font-size: 3rem; opacity: .35; }
+    .main-img-placeholder p { font-size: .85rem; color: var(--gray-500); text-align: center; }
+    .main-expand-btn {
+      position: absolute; bottom: 10px; right: 10px;
+      background: rgba(0,0,0,.55); color: white; border: none;
+      border-radius: var(--radius-sm); padding: 6px 12px;
+      font-size: .75rem; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; gap: 5px;
+      transition: background var(--transition);
+    }
+    .main-expand-btn:hover { background: rgba(0,0,0,.8); }
+    .main-res-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--gray-900); }
+    .main-res-desc  { font-size: .87rem; color: var(--gray-500); line-height: 1.6; }
+    .main-res-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .res-action-btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 8px 16px; border-radius: var(--radius-sm);
+      border: 1.5px solid var(--gray-300);
+      background: transparent; font-size: .83rem; font-weight: 600;
+      color: var(--gray-700); cursor: pointer;
+      transition: all var(--transition); text-decoration: none;
+    }
+    .res-action-btn:hover { background: var(--gray-100); border-color: var(--gray-500); }
+    .res-action-btn.primary { background: var(--blue-600); border-color: var(--blue-600); color: white; }
+    .res-action-btn.primary:hover { background: var(--blue-700); }
+
+    /* Badge tipo */
+    .res-type-badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 3px 9px; border-radius: 100px;
+      font-size: .72rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .04em; margin-bottom: 6px;
+    }
+    .badge-pdf   { background: #fde8e8; color: #b91c1c; }
+    .badge-link  { background: var(--blue-100); color: var(--blue-700); }
+    .badge-audio { background: #ede7f6; color: #6d28d9; }
+    .badge-img   { background: #e8f5e9; color: #15803d; }
+    .badge-video { background: #fef9c3; color: #854d0e; }
+
+    /* Empty sidebar slot */
+    .res-item-empty {
+      opacity: .45;
+      pointer-events: none;
+      border-style: dashed;
+    }
+    .res-item-empty .res-item-thumb {
+      background: var(--gray-100) !important;
+    }
+      padding: 40px 20px; text-align: center;
+      color: var(--gray-500); border: 2px dashed var(--gray-300);
+      border-radius: var(--radius-md); font-size: .9rem;
     }
     .resource-placeholder .rp-icon { font-size: 2.2rem; margin-bottom: 8px; display: block; }
+
+    /* ── LIGHTBOX ── */
+    .lightbox-backdrop {
+      display: none; position: fixed; inset: 0; z-index: 999;
+      background: rgba(0,0,0,.9);
+      align-items: center; justify-content: center;
+      flex-direction: column; gap: 16px; padding: 20px;
+    }
+    .lightbox-backdrop.open { display: flex; }
+    .lightbox-frame {
+      width: 100%; max-width: 1000px; aspect-ratio: 16/9;
+      border-radius: var(--radius-md); overflow: hidden; background: #000;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .lightbox-frame img { width:100%; height:100%; object-fit:contain; }
+    .lightbox-frame svg { width:100%; height:100%; }
+    .lightbox-caption { font-size: .88rem; color: rgba(255,255,255,.6); text-align: center; max-width: 700px; }
+    .lightbox-close-btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 22px; border-radius: var(--radius-sm);
+      border: 1.5px solid rgba(255,255,255,.28);
+      background: rgba(255,255,255,.1); color: white;
+      font-size: .88rem; font-weight: 700; cursor: pointer;
+      transition: background var(--transition);
+    }
+    .lightbox-close-btn:hover { background: rgba(255,255,255,.22); }
+
+    /* ── Admin: recurso form ── */
+    .admin-section-divider {
+      font-family: 'Nunito', sans-serif; font-weight: 800;
+      font-size: .88rem; color: var(--orange-600);
+      display: flex; align-items: center; gap: 8px;
+      margin: 16px 0 12px; padding-bottom: 8px;
+      border-bottom: 1.5px dashed var(--orange-400);
+    }
+    .main-img-upload-zone {
+      border: 2px dashed var(--gray-300); border-radius: var(--radius-md);
+      aspect-ratio: 16/9; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      cursor: pointer; background: var(--gray-50); margin-bottom: 12px;
+      transition: border-color var(--transition);
+    }
+    .main-img-upload-zone:hover { border-color: var(--blue-500); background: var(--blue-50); }
+    .main-img-upload-zone input { display: none; }
+    .main-img-upload-zone .tz-icon { font-size: 2.5rem; }
+    .main-img-upload-zone p { font-size: .85rem; color: var(--gray-500); text-align: center; }
+    .main-img-upload-zone strong { color: var(--blue-600); }
+    .main-img-preview-box {
+      aspect-ratio: 16/9; border-radius: var(--radius-md);
+      overflow: hidden; background: var(--gray-900);
+      margin-bottom: 12px; position: relative; display: none;
+    }
+    .main-img-preview-box img { width:100%; height:100%; object-fit:cover; }
+    .main-img-remove {
+      position: absolute; top: 10px; right: 10px;
+      background: rgba(0,0,0,.6); color: white; border: none;
+      border-radius: 50%; width: 30px; height: 30px;
+      cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .res-form-grid { display: grid; grid-template-columns: 140px 1fr; gap: 14px; align-items: start; }
+    .thumb-upload-zone {
+      border: 2px dashed var(--gray-300); border-radius: var(--radius-sm);
+      aspect-ratio: 16/9; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 6px;
+      cursor: pointer; background: var(--gray-50);
+      transition: border-color var(--transition);
+    }
+    .thumb-upload-zone:hover { border-color: var(--blue-500); }
+    .thumb-upload-zone input { display: none; }
+    .thumb-upload-zone .tz-icon { font-size: 1.4rem; }
+    .thumb-upload-zone p { font-size: .72rem; color: var(--gray-500); text-align: center; }
+    .thumb-preview-box {
+      aspect-ratio: 16/9; border-radius: var(--radius-sm);
+      overflow: hidden; background: var(--gray-900);
+      position: relative; display: none;
+    }
+    .thumb-preview-box img { width:100%; height:100%; object-fit:cover; }
+    .thumb-remove {
+      position: absolute; top: 4px; right: 4px;
+      background: rgba(0,0,0,.6); color: white; border: none;
+      border-radius: 50%; width: 22px; height: 22px;
+      cursor: pointer; font-size: .75rem;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .res-list-admin { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+    .res-admin-item {
+      display: flex; align-items: center; gap: 10px;
+      background: var(--white); border: 1px solid var(--gray-100);
+      border-radius: var(--radius-sm); padding: 8px 12px;
+    }
+    .res-admin-thumb {
+      width: 56px; height: 32px; border-radius: 4px;
+      overflow: hidden; background: var(--gray-100); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .res-admin-thumb img { width:100%; height:100%; object-fit:cover; }
+    .res-admin-info { flex: 1; min-width: 0; }
+    .res-admin-info strong { display: block; font-size: .8rem; color: var(--gray-900); font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .res-admin-info span { font-size: .72rem; color: var(--gray-500); }
+    .res-admin-del { background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: .9rem; padding: 4px; flex-shrink: 0; }
+    .res-admin-del:hover { color: #ef4444; }
+    .ratio-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; background: var(--blue-100); color: var(--blue-700); border-radius: 100px; font-size: .7rem; font-weight: 700; margin-bottom: 8px; }
 
     /* Evaluation */
     .eval-section { display: flex; flex-direction: column; gap: 18px; }
@@ -870,8 +1029,8 @@
       .card-header-text h2 { font-size: .98rem; }
 
       /* RESOURCES */
-      .resources-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-      .resource-card { padding: 14px 10px; }
+      .dev-layout { grid-template-columns: 150px 1fr; }
+      .res-form-grid { grid-template-columns: 1fr; }
 
       /* VIDEO */
       .video-container { border-radius: var(--radius-sm); }
@@ -901,7 +1060,9 @@
       .op-tab { padding: 7px 9px; font-size: .85rem; gap: 0; }
       .nav-brand-text { display: none; } /* hide text, keep logo */
       .nav-logo { width: 38px; height: 38px; }
-      .resources-grid { grid-template-columns: 1fr; }
+      .dev-layout { grid-template-columns: 1fr; }
+      .dev-sidebar { border-right: none; border-bottom: 1px solid var(--gray-100); flex-direction: row; overflow-x: auto; padding: 10px; gap: 10px; }
+      .res-item { min-width: 120px; }
       .hero-title { font-size: 1.3rem; }
       .progress-step { padding: 11px 14px; }
       .step-num { width: 28px; height: 28px; font-size: .78rem; }
@@ -1085,23 +1246,25 @@
 
   <!-- ─── SECCIÓN: DESARROLLO ─── -->
   <div class="section-panel" id="panel-desarrollo">
-    <div class="card">
+    <div class="card" style="overflow:hidden">
       <div class="card-header">
         <div class="card-header-icon icon-desarrollo">🚀</div>
         <div class="card-header-text">
           <h2>Desarrollo — Recursos</h2>
-          <p>Descarga o visualiza los materiales de esta lección</p>
+          <p>Selecciona un recurso para explorar el material</p>
         </div>
       </div>
-      <div class="card-body">
-        <div id="resourcesContainer">
-          <div class="resource-placeholder">
-            <span class="rp-icon">📂</span>
-            El docente aún no ha subido recursos para esta operación.
-          </div>
-        </div>
+      <div id="resourcesContainer">
+        <!-- renderDesarrollo() fills this — always shows 4 slots -->
       </div>
     </div>
+  </div>
+
+  <!-- LIGHTBOX -->
+  <div class="lightbox-backdrop" id="lightboxBackdrop" onclick="closeLightbox(event)">
+    <div class="lightbox-frame" id="lightboxFrame"></div>
+    <p class="lightbox-caption" id="lightboxCaption"></p>
+    <button class="lightbox-close-btn" onclick="closeLightbox()">✕ Cerrar imagen</button>
   </div>
 
   <!-- ─── SECCIÓN: CIERRE ─── -->
@@ -1170,33 +1333,85 @@
 
         <!-- DESARROLLO FORM -->
         <div class="admin-step-form" id="af-desarrollo">
+
+          <!-- Imagen principal -->
+          <div class="admin-section-divider">🖼️ Imagen principal de la sección (centro)</div>
+          <div class="ratio-badge">16:9 recomendado</div>
+          <div class="main-img-upload-zone" id="mainImgUploadZone"
+            onclick="document.getElementById('mainImgFileInput').click()"
+            ondragover="mainImgDragOver(event)" ondragleave="mainImgDragLeave(event)" ondrop="mainImgDrop(event)">
+            <input type="file" id="mainImgFileInput" accept=".jpg,.jpeg,.png,.gif,.webp" onchange="handleMainImg(this.files[0])" />
+            <span class="tz-icon">🖼️</span>
+            <p><strong>Haz clic o arrastra</strong> la imagen principal<br><small>JPG, PNG, WebP • Recomendado 1280×720 px</small></p>
+          </div>
+          <div class="main-img-preview-box" id="mainImgPreviewBox">
+            <img id="mainImgPreviewImg" src="" alt="Vista previa imagen principal" />
+            <button class="main-img-remove" onclick="clearMainImg()">✕</button>
+          </div>
           <div class="field-group">
-            <label>📎 Subir recursos (PDFs, imágenes, audios) — máx. 25 MB</label>
-            <!--
-              NOTA PARA EL DESARROLLADOR:
-              Al seleccionar archivos, el flujo real sería:
-              1. Subir el archivo a un servicio de almacenamiento (Firebase Storage, Cloudinary, Drive, etc.)
-              2. Obtener la URL pública del archivo
-              3. Guardar esa URL en Google Sheets via saveDataToSheets()
-              El input aquí simula el drag & drop; la integración real requiere un backend o servicio cloud.
-            -->
-            <div class="dropzone" id="dropzone" onclick="document.getElementById('fileInput').click()"
-              ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-              <input type="file" id="fileInput" multiple accept=".pdf,.jpg,.jpeg,.png,.gif,.mp3,.wav,.ogg"
-                onchange="handleFiles(this.files)" />
-              <span class="dropzone-icon">☁️</span>
-              <p><strong>Haz clic o arrastra</strong> archivos aquí<br>
-                <small>PDF, Imágenes, Audio • Máx 25 MB por archivo</small></p>
-            </div>
-            <div class="file-list" id="fileList"></div>
+            <label>🔗 O pega URL de imagen externa</label>
+            <input type="url" id="main-img-url" placeholder="https://... URL de la imagen principal"
+              oninput="previewMainImgUrl(this.value)" />
           </div>
 
-          <div class="field-group">
-            <label>🔗 O pega URLs de recursos externos (una por línea)</label>
-            <textarea id="admin-resource-urls" rows="4"
-              placeholder="https://drive.google.com/file/...
-https://ejemplo.com/guia.pdf"></textarea>
+          <!-- Recursos barra lateral -->
+          <div class="admin-section-divider">📋 Recursos de la barra lateral izquierda</div>
+
+          <!-- Lista de recursos ya agregados -->
+          <div id="res-list-admin" class="res-list-admin"></div>
+
+          <!-- Formulario nuevo recurso -->
+          <div class="res-form-grid">
+            <!-- Miniatura pequeña -->
+            <div>
+              <label style="font-size:.78rem;font-weight:600;color:var(--gray-700);display:block;margin-bottom:6px">🖼️ Miniatura</label>
+              <div class="thumb-upload-zone" id="thumbUploadZone"
+                onclick="document.getElementById('thumbFileInput').click()"
+                ondragover="thumbDragOver(event)" ondragleave="thumbDragLeave(event)" ondrop="thumbDrop(event)">
+                <input type="file" id="thumbFileInput" accept=".jpg,.jpeg,.png,.gif,.webp" onchange="handleThumbFile(this.files[0])" />
+                <span class="tz-icon">🖼️</span>
+                <p>Subir<br>miniatura</p>
+              </div>
+              <div class="thumb-preview-box" id="thumbPreviewBox">
+                <img id="thumbPreviewImg" src="" alt="miniatura" />
+                <button class="thumb-remove" onclick="clearThumb()">✕</button>
+              </div>
+              <input type="url" id="thumbUrlInput" placeholder="o URL de imagen..."
+                oninput="previewThumbUrl(this.value)"
+                style="width:100%;padding:6px 8px;border:1px solid var(--gray-300);border-radius:var(--radius-sm);font-size:.75rem;margin-top:6px" />
+            </div>
+
+            <!-- Campos del recurso -->
+            <div>
+              <div class="field-group">
+                <label>📝 Título</label>
+                <input type="text" id="new-res-title" placeholder="Nombre del recurso" />
+              </div>
+              <div class="field-group">
+                <label>🏷️ Tipo</label>
+                <select id="new-res-type">
+                  <option value="link">🔗 Enlace</option>
+                  <option value="pdf">📄 PDF</option>
+                  <option value="audio">🎵 Audio</option>
+                  <option value="img">🖼️ Imagen</option>
+                  <option value="video">🎬 Video</option>
+                </select>
+              </div>
+              <div class="field-group">
+                <label>📋 Descripción breve</label>
+                <textarea id="new-res-desc" rows="2" placeholder="Breve descripción..."></textarea>
+              </div>
+              <div class="field-group">
+                <label>🔗 URL del recurso</label>
+                <input type="url" id="new-res-url" placeholder="https://..." />
+              </div>
+              <div style="display:flex;gap:8px;justify-content:flex-end">
+                <button class="btn btn-secondary" onclick="clearResForm()">🗑️ Limpiar</button>
+                <button class="btn btn-blue" onclick="addResource()">➕ Agregar</button>
+              </div>
+            </div>
           </div>
+
         </div>
 
         <!-- CIERRE FORM -->
@@ -1300,6 +1515,9 @@ const heroContent = {
 
 // Archivos pendientes de subida (admin)
 let pendingFiles = [];
+let pendingResources = []; // recursos del admin para sección desarrollo
+let currentThumbData  = ''; // base64 o URL de la miniatura del recurso lateral
+let currentMainImgData = ''; // base64 o URL de la imagen principal de desarrollo
 
 // ─────────────────────────────────────────────
 // NAVEGACIÓN
@@ -1372,48 +1590,156 @@ function renderInicio(data) {
 
 function renderDesarrollo(data) {
   const container = document.getElementById('resourcesContainer');
-  const resources = data.resources || [];
+  if (!container) return;
 
-  if (!resources.length) {
-    container.innerHTML = `
-      <div class="resource-placeholder">
-        <span class="rp-icon">📂</span>
-        El docente aún no ha subido recursos para esta operación.
-      </div>`;
-    return;
+  const mainImg   = data.mainImg || '';
+  const typeConfig = {
+    pdf:   { badge:'badge-pdf',   icon:'📄', label:'PDF',    btnPrimary:'⬇️ Descargar',     btnSecondary:'↗ Abrir' },
+    audio: { badge:'badge-audio', icon:'🎵', label:'Audio',  btnPrimary:'▶️ Reproducir',    btnSecondary:'⬇️ Descargar' },
+    img:   { badge:'badge-img',   icon:'🖼️', label:'Imagen', btnPrimary:'🔍 Ver imagen',    btnSecondary:null },
+    video: { badge:'badge-video', icon:'🎬', label:'Video',  btnPrimary:'▶️ Ver video',     btnSecondary:null },
+    link:  { badge:'badge-link',  icon:'🔗', label:'Enlace', btnPrimary:'↗ Ir al recurso',  btnSecondary:null },
+  };
+
+  // Always show 4 slots — fill with real resources, rest are empty placeholders
+  const SLOTS = 4;
+  const resources = data.resources || [];
+  const slots = [];
+  for (let i = 0; i < SLOTS; i++) {
+    slots.push(resources[i] || null); // null = empty slot
   }
 
-  const getIconForUrl = (url) => {
-    const lower = url.toLowerCase();
-    if (lower.endsWith('.pdf')) return ['📄','pdf'];
-    if (lower.match(/\.(png|jpg|jpeg|gif|webp)$/)) return ['🖼️','img'];
-    if (lower.match(/\.(mp3|wav|ogg|m4a)$/)) return ['🎵','audio'];
-    if (lower.match(/\.(mp4|avi|mov|webm)$/)) return ['🎬','img'];
-    // Generic link (educaplay, drive, forms, etc.)
-    return ['🔗','img'];
-  };
-
-  const getName = (r) => {
-    if (r.name && r.name !== r.url && !r.name.startsWith('http')) return r.name;
-    try {
-      const u = new URL(r.url);
-      const parts = u.pathname.split('/').filter(Boolean);
-      const last = parts[parts.length - 1] || u.hostname;
-      return decodeURIComponent(last).replace(/[-_]/g,' ').substring(0,40);
-    } catch(_) { return r.name || 'Recurso'; }
-  };
-
-  const cards = resources.map(r => {
-    const [icon, cls] = getIconForUrl(r.url);
-    const name = getName(r);
+  // Build sidebar items (always 4)
+  const sideItems = slots.map((r, i) => {
+    if (!r) {
+      // Empty slot
+      return `
+        <div class="res-item res-item-empty" id="res-item-${i}">
+          <div class="res-item-thumb" style="background:var(--gray-100)">
+            <span style="font-size:1.2rem;opacity:.3">📋</span>
+          </div>
+          <div class="res-item-body">
+            <div class="res-item-badge" style="color:var(--gray-300)">— vacío</div>
+            <div class="res-item-title" style="color:var(--gray-300)">Sin recurso</div>
+          </div>
+        </div>`;
+    }
+    const cfg = typeConfig[r.type] || typeConfig['link'];
+    const thumbHtml = r.thumb
+      ? `<img src="${r.thumb}" alt="${r.title||''}" loading="lazy" />`
+      : `<span style="font-size:1.4rem">${cfg.icon}</span>`;
     return `
-      <a href="${r.url}" target="_blank" rel="noopener" class="resource-card">
-        <div class="resource-icon ${cls}">${icon}</div>
-        <span class="resource-name">${name}</span>
-      </a>`;
+      <div class="res-item${i===0?' active':''}" onclick="selectResource(${i})" id="res-item-${i}">
+        <div class="res-item-thumb">${thumbHtml}</div>
+        <div class="res-item-body">
+          <div class="res-item-badge">${cfg.icon} ${cfg.label}</div>
+          <div class="res-item-title">${r.title||'Recurso'}</div>
+        </div>
+      </div>`;
   }).join('');
 
-  container.innerHTML = `<div class="resources-grid">${cards}</div>`;
+  // Main area — show first real resource or empty state
+  const first    = resources[0] || null;
+  const firstCfg = first ? (typeConfig[first.type] || typeConfig['link']) : typeConfig['link'];
+
+  const mainImgHtml = mainImg
+    ? `<img src="${mainImg}" alt="Imagen principal" />`
+    : `<div class="main-img-placeholder">
+        <span class="mip-icon">🖼️</span>
+        <p>El docente aún no ha cargado<br>la imagen principal</p>
+      </div>`;
+
+  const mainTitleHtml = first
+    ? `<div class="res-type-badge ${firstCfg.badge}" id="mainBadge">${firstCfg.icon} ${firstCfg.label}</div>
+       <p class="main-res-title" id="mainTitle">${first.title||'Recurso'}</p>
+       <p class="main-res-desc"  id="mainDesc">${first.desc||''}</p>
+       <div class="main-res-actions" id="mainActions">
+         <a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn primary">${firstCfg.btnPrimary}</a>
+         ${firstCfg.btnSecondary ? `<a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn">${firstCfg.btnSecondary}</a>` : ''}
+       </div>`
+    : `<p class="main-res-desc" style="color:var(--gray-500);text-align:center;padding:10px 0" id="mainTitle">Selecciona un recurso de la barra izquierda</p>
+       <div id="mainBadge" style="display:none"></div>
+       <p id="mainDesc"></p>
+       <div id="mainActions"></div>`;
+
+  container.innerHTML = `
+    <div class="dev-layout">
+      <div class="dev-sidebar">
+        <p class="dev-sidebar-lbl">Recursos</p>
+        ${sideItems}
+      </div>
+      <div class="dev-main">
+        <div class="main-img-box" id="mainImgBox"
+          onclick="openLightbox('${mainImg.replace(/'/g,"\\'")}','${(first?.title||'').replace(/'/g,"\\'")}','${firstCfg.icon}','${firstCfg.label}')">
+          ${mainImgHtml}
+          <button class="main-expand-btn" aria-label="Pantalla completa">⛶ Pantalla completa</button>
+        </div>
+        ${mainTitleHtml}
+      </div>
+    </div>`;
+
+  // Store for selectResource()
+  window._devResources = resources;
+  window._devMainImg   = mainImg;
+  window._devTypeCfg   = typeConfig;
+}
+
+function selectResource(idx) {
+  const resources  = window._devResources || [];
+  const mainImg    = window._devMainImg   || '';
+  const typeConfig = window._devTypeCfg   || {};
+  const r   = resources[idx];
+  if (!r) return;
+  const cfg = typeConfig[r.type] || typeConfig['link'];
+
+  // Update sidebar active
+  document.querySelectorAll('.res-item').forEach((el, i) => el.classList.toggle('active', i === idx));
+
+  // Update lightbox click
+  const box = document.getElementById('mainImgBox');
+  if (box) box.onclick = () => openLightbox(mainImg, r.title||'', cfg.icon, cfg.label);
+
+  // Update text
+  const titleEl   = document.getElementById('mainTitle');
+  const descEl    = document.getElementById('mainDesc');
+  const badgeEl   = document.getElementById('mainBadge');
+  const actionsEl = document.getElementById('mainActions');
+
+  if (titleEl)   titleEl.textContent   = r.title || 'Recurso';
+  if (descEl)    descEl.textContent    = r.desc  || '';
+  if (badgeEl)   { badgeEl.className = `res-type-badge ${cfg.badge}`; badgeEl.textContent = `${cfg.icon} ${cfg.label}`; }
+  if (actionsEl) {
+    const sec = cfg.btnSecondary ? `<a href="${r.url||'#'}" target="_blank" rel="noopener" class="res-action-btn">${cfg.btnSecondary}</a>` : '';
+    actionsEl.innerHTML = `<a href="${r.url||'#'}" target="_blank" rel="noopener" class="res-action-btn primary">${cfg.btnPrimary}</a>${sec}`;
+  }
+}
+
+// ─────────────────────────────────────────────
+// LIGHTBOX
+// ─────────────────────────────────────────────
+function openLightbox(thumb, title, icon, label) {
+  const backdrop = document.getElementById('lightboxBackdrop');
+  const frame    = document.getElementById('lightboxFrame');
+  const caption  = document.getElementById('lightboxCaption');
+  if (thumb) {
+    frame.innerHTML = `<img src="${thumb}" alt="${title}" />`;
+  } else {
+    frame.innerHTML = `<svg viewBox="0 0 640 360" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+      <rect width="640" height="360" fill="#0d2c6b"/>
+      <text x="320" y="200" text-anchor="middle" font-size="64" font-family="sans-serif">${icon}</text>
+      <text x="320" y="245" text-anchor="middle" font-size="16" fill="rgba(255,255,255,.55)" font-family="sans-serif">${label}</text>
+    </svg>`;
+  }
+  caption.textContent = title;
+  backdrop.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeLightbox(e) {
+  if (e && e.target !== document.getElementById('lightboxBackdrop') && !e.currentTarget.classList?.contains('lightbox-close-btn')) return;
+  document.getElementById('lightboxBackdrop').classList.remove('open');
+  document.getElementById('lightboxFrame').innerHTML = '';
+  document.body.style.overflow = '';
 }
 
 function renderCierre(data) {
@@ -1571,13 +1897,7 @@ function buildAdminPayload() {
     };
   }
   if (adminStep === 'desarrollo') {
-    const urlsRaw = document.getElementById('admin-resource-urls').value.trim();
-    const urlResources = urlsRaw
-      ? urlsRaw.split('\n').filter(u => u.trim()).map(u => ({ url: u.trim(), name: u.trim().split('/').pop() }))
-      : [];
-    // pendingFiles → en producción, aquí se subirían y se obtendría la URL
-    const fileResources = pendingFiles.map(f => ({ url: `[pendiente: ${f.name}]`, name: f.name }));
-    return { resources: [...urlResources, ...fileResources] };
+    return { resources: pendingResources.slice(), mainImg: currentMainImgData };
   }
   if (adminStep === 'cierre') {
     return {
@@ -1671,10 +1991,18 @@ function populateAdminForm() {
     previewYoutubeUrl(document.getElementById('admin-video-url').value);
   }
   if (adminStep === 'desarrollo') {
-    const urls = (data.resources || []).map(r => r.url).join('\n');
-    document.getElementById('admin-resource-urls').value = urls;
-    pendingFiles = [];
-    renderFileList();
+    pendingResources  = (data.resources || []).slice();
+    currentMainImgData = data.mainImg || '';
+    renderAdminResList();
+    clearResForm();
+    // Restore main image preview
+    if (currentMainImgData) {
+      showMainImgPreview(currentMainImgData);
+      const urlInput = document.getElementById('main-img-url');
+      if (urlInput && !currentMainImgData.startsWith('data:')) urlInput.value = currentMainImgData;
+    } else {
+      clearMainImg();
+    }
   }
   if (adminStep === 'cierre') {
     document.getElementById('admin-eval-instructions').value = data.instructions || '';
@@ -1722,57 +2050,169 @@ function previewYoutubeUrl(url) {
 }
 
 // ─────────────────────────────────────────────
-// FILE UPLOAD
+// ADMIN — RECURSOS (nuevo sistema)
 // ─────────────────────────────────────────────
-function handleFiles(files) {
-  const maxSize = 25 * 1024 * 1024; // 25 MB
-  for (const f of files) {
-    if (f.size > maxSize) {
-      showToast(`❌ "${f.name}" supera los 25 MB`, 'error');
-      continue;
-    }
-    if (!pendingFiles.find(p => p.name === f.name)) pendingFiles.push(f);
+
+// Thumb mode toggle
+function setThumbMode(mode) {
+  document.getElementById('thumbModeUpload').classList.toggle('active', mode === 'upload');
+  document.getElementById('thumbModeUrl').classList.toggle('active', mode === 'url');
+  document.getElementById('thumbUploadZone').style.display = mode === 'upload' ? 'flex' : 'none';
+  document.getElementById('thumbUrlZone').style.display    = mode === 'url'    ? 'block' : 'none';
+}
+
+// Handle thumb file upload → base64
+function handleThumbFile(file) {
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) {
+    showToast('⚠️ La miniatura supera 5 MB. Usa una imagen más pequeña.', 'error');
+    return;
   }
-  renderFileList();
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    currentThumbData = e.target.result; // base64
+    showThumbPreview(currentThumbData);
+  };
+  reader.readAsDataURL(file);
 }
 
-function handleDragOver(e) {
+// Handle thumb URL
+function previewThumbUrl(url) {
+  if (!url.trim()) { clearThumb(); return; }
+  currentThumbData = url.trim();
+  showThumbPreview(currentThumbData);
+}
+
+function showThumbPreview(src) {
+  const box = document.getElementById('thumbPreviewBox');
+  const img = document.getElementById('thumbPreviewImg');
+  img.src = src;
+  box.style.display = 'block';
+  document.getElementById('thumbUploadZone').style.display = 'none';
+  document.getElementById('thumbUrlZone').style.display    = 'none';
+}
+
+function clearThumb() {
+  currentThumbData = '';
+  document.getElementById('thumbPreviewBox').style.display = 'none';
+  document.getElementById('thumbPreviewImg').src = '';
+  document.getElementById('thumbUrlInput') && (document.getElementById('thumbUrlInput').value = '');
+  // restore upload zone
+  const mode = document.getElementById('thumbModeUpload').classList.contains('active') ? 'upload' : 'url';
+  setThumbMode(mode);
+}
+
+function thumbDragOver(e) { e.preventDefault(); document.getElementById('thumbUploadZone').style.borderColor='var(--blue-500)'; }
+function thumbDragLeave()  { document.getElementById('thumbUploadZone').style.borderColor=''; }
+function thumbDrop(e) {
   e.preventDefault();
-  document.getElementById('dropzone').classList.add('drag-over');
-}
-function handleDragLeave() {
-  document.getElementById('dropzone').classList.remove('drag-over');
-}
-function handleDrop(e) {
-  e.preventDefault();
-  document.getElementById('dropzone').classList.remove('drag-over');
-  handleFiles(e.dataTransfer.files);
+  document.getElementById('thumbUploadZone').style.borderColor = '';
+  if (e.dataTransfer.files[0]) handleThumbFile(e.dataTransfer.files[0]);
 }
 
-function removeFile(name) {
-  pendingFiles = pendingFiles.filter(f => f.name !== name);
-  renderFileList();
+// Add resource to list
+function addResource() {
+  const title = document.getElementById('new-res-title').value.trim();
+  const type  = document.getElementById('new-res-type').value;
+  const desc  = document.getElementById('new-res-desc').value.trim();
+  const url   = document.getElementById('new-res-url').value.trim();
+
+  if (!title) { showToast('⚠️ Agrega un título al recurso', 'error'); return; }
+  if (!url)   { showToast('⚠️ Agrega la URL del recurso', 'error');   return; }
+
+  const resource = { title, type, desc, url, thumb: currentThumbData };
+  pendingResources.push(resource);
+  renderAdminResList();
+  clearResForm();
+  showToast('✅ Recurso agregado. Guarda los cambios para publicar.', 'success');
 }
 
-function renderFileList() {
-  const list = document.getElementById('fileList');
-  if (!pendingFiles.length) { list.innerHTML = ''; return; }
-  list.innerHTML = pendingFiles.map(f => `
-    <div class="file-item">
-      <span>${fileIcon(f.name)}</span>
-      <span class="file-item-name">${f.name}</span>
-      <span class="file-item-size">${(f.size/1024/1024).toFixed(2)} MB</span>
-      <button class="file-remove" onclick="removeFile('${f.name}')">✕</button>
+function removeResource(idx) {
+  pendingResources.splice(idx, 1);
+  renderAdminResList();
+}
+
+function renderAdminResList() {
+  const container = document.getElementById('res-list-admin');
+  if (!container) return;
+  if (!pendingResources.length) { container.innerHTML = ''; return; }
+
+  const typeIcons = { pdf:'📄', audio:'🎵', img:'🖼️', video:'🎬', link:'🔗' };
+  container.innerHTML = pendingResources.map((r, i) => `
+    <div class="res-admin-item">
+      <div class="res-admin-thumb">
+        ${r.thumb ? `<img src="${r.thumb}" alt="${r.title}" />` : `<span>${typeIcons[r.type] || '🔗'}</span>`}
+      </div>
+      <div class="res-admin-info">
+        <strong>${r.title}</strong>
+        <span>${r.type.toUpperCase()} · ${r.url.substring(0,45)}${r.url.length > 45 ? '…' : ''}</span>
+      </div>
+      <button class="res-admin-del" onclick="removeResource(${i})" title="Eliminar">✕</button>
     </div>`).join('');
 }
 
-function fileIcon(name) {
-  const ext = name.split('.').pop().toLowerCase();
-  if (ext === 'pdf') return '📄';
-  if (['jpg','jpeg','png','gif'].includes(ext)) return '🖼️';
-  if (['mp3','wav','ogg'].includes(ext)) return '🎵';
-  return '📎';
+function clearResForm() {
+  document.getElementById('new-res-title').value = '';
+  document.getElementById('new-res-type').value  = 'link';
+  document.getElementById('new-res-desc').value  = '';
+  document.getElementById('new-res-url').value   = '';
+  clearThumb();
 }
+
+// ─────────────────────────────────────────────
+// ADMIN — IMAGEN PRINCIPAL
+// ─────────────────────────────────────────────
+function handleMainImg(file) {
+  if (!file) return;
+  if (file.size > 5 * 1024 * 1024) { showToast('⚠️ La imagen supera 5 MB', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    currentMainImgData = e.target.result;
+    showMainImgPreview(currentMainImgData);
+  };
+  reader.readAsDataURL(file);
+}
+
+function previewMainImgUrl(url) {
+  if (!url.trim()) { clearMainImg(); return; }
+  currentMainImgData = url.trim();
+  showMainImgPreview(currentMainImgData);
+}
+
+function showMainImgPreview(src) {
+  const box = document.getElementById('mainImgPreviewBox');
+  const img = document.getElementById('mainImgPreviewImg');
+  if (!box || !img) return;
+  img.src = src;
+  box.style.display = 'block';
+  document.getElementById('mainImgUploadZone').style.display = 'none';
+}
+
+function clearMainImg() {
+  currentMainImgData = '';
+  const box = document.getElementById('mainImgPreviewBox');
+  const inp = document.getElementById('main-img-url');
+  if (box) box.style.display = 'none';
+  if (inp) inp.value = '';
+  const zone = document.getElementById('mainImgUploadZone');
+  if (zone) zone.style.display = 'flex';
+}
+
+function mainImgDragOver(e) { e.preventDefault(); document.getElementById('mainImgUploadZone').style.borderColor='var(--blue-500)'; }
+function mainImgDragLeave()  { const z = document.getElementById('mainImgUploadZone'); if(z) z.style.borderColor=''; }
+function mainImgDrop(e) {
+  e.preventDefault();
+  mainImgDragLeave();
+  if (e.dataTransfer.files[0]) handleMainImg(e.dataTransfer.files[0]);
+}
+
+// Legacy stubs (kept to avoid errors if referenced elsewhere)
+function handleFiles() {}
+function handleDragOver(e) { e.preventDefault(); }
+function handleDragLeave() {}
+function handleDrop(e) { e.preventDefault(); }
+function renderFileList() {}
+function fileIcon(n) { return '📎'; }
 
 // ─────────────────────────────────────────────
 // CLEAR DATA
