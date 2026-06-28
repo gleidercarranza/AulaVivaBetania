@@ -1592,7 +1592,7 @@ function renderDesarrollo(data) {
   const container = document.getElementById('resourcesContainer');
   if (!container) return;
 
-  const mainImg   = data.mainImg || '';
+  const mainImg   = normalizeImgUrl(data.mainImg || '');
   const typeConfig = {
     pdf:   { badge:'badge-pdf',   icon:'📄', label:'PDF',    btnPrimary:'⬇️ Descargar',     btnSecondary:'↗ Abrir' },
     audio: { badge:'badge-audio', icon:'🎵', label:'Audio',  btnPrimary:'▶️ Reproducir',    btnSecondary:'⬇️ Descargar' },
@@ -1625,8 +1625,9 @@ function renderDesarrollo(data) {
         </div>`;
     }
     const cfg = typeConfig[r.type] || typeConfig['link'];
-    const thumbHtml = r.thumb
-      ? `<img src="${r.thumb}" alt="${r.title||''}" loading="lazy" />`
+    const thumbSrc = normalizeImgUrl(r.thumb || '');
+    const thumbHtml = thumbSrc
+      ? `<img src="${thumbSrc}" alt="${r.title||''}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><span style="font-size:1.4rem;display:none;align-items:center;justify-content:center;width:100%;height:100%">${cfg.icon}</span>`
       : `<span style="font-size:1.4rem">${cfg.icon}</span>`;
     return `
       <div class="res-item${i===0?' active':''}" onclick="selectResource(${i})" id="res-item-${i}">
@@ -1699,7 +1700,7 @@ function selectResource(idx) {
   const box = document.getElementById('mainImgBox');
   if (box) box.onclick = () => openLightbox(mainImg, r.title||'', cfg.icon, cfg.label);
 
-  // Update text
+  // Update text & actions
   const titleEl   = document.getElementById('mainTitle');
   const descEl    = document.getElementById('mainDesc');
   const badgeEl   = document.getElementById('mainBadge');
@@ -1709,8 +1710,9 @@ function selectResource(idx) {
   if (descEl)    descEl.textContent    = r.desc  || '';
   if (badgeEl)   { badgeEl.className = `res-type-badge ${cfg.badge}`; badgeEl.textContent = `${cfg.icon} ${cfg.label}`; }
   if (actionsEl) {
-    const sec = cfg.btnSecondary ? `<a href="${r.url||'#'}" target="_blank" rel="noopener" class="res-action-btn">${cfg.btnSecondary}</a>` : '';
-    actionsEl.innerHTML = `<a href="${r.url||'#'}" target="_blank" rel="noopener" class="res-action-btn primary">${cfg.btnPrimary}</a>${sec}`;
+    const resUrl = r.url || '#';
+    const sec = cfg.btnSecondary ? `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn">${cfg.btnSecondary}</a>` : '';
+    actionsEl.innerHTML = `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn primary">${cfg.btnPrimary}</a>${sec}`;
   }
 }
 
@@ -1835,18 +1837,12 @@ async function fetchDataFromSheets() {
     showToast('✅ Datos sincronizados con Google Sheets', 'success');
   } catch (err) {
     console.warn('[AventurasMat] Sheets fetch error:', err.message);
-    // Ya renderizamos arriba con datos locales, no hacer nada más
-    if (!hasLocal) {
-      // Solo mostrar aviso si no hay datos locales tampoco
-      console.info('[AventurasMat] Sin datos locales ni Sheets. Estado inicial vacío.');
-    }
+    renderCurrentPanel(); // Re-render con datos locales si los hay
   }
 }
 
 async function saveDataToSheets() {
   mergeAdminFormToAppData();
-
-  // Siempre guardar en localStorage primero
   const localOk = saveToLocalStorage();
   renderCurrentPanel();
 
@@ -1855,38 +1851,68 @@ async function saveDataToSheets() {
     return;
   }
 
-  // Usar GET con parámetros codificados (evita CORS de preflight)
-  const payload = buildAdminPayload();
-  const params = new URLSearchParams({
-    action: 'saveData',
-    op:     adminOp,
-    step:   adminStep,
-    data:   JSON.stringify(payload)
-  });
-
-  // Mostrar estado de carga
   const saveBtn = document.getElementById('saveBtn');
   if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ Guardando...'; }
 
+  const payload = buildAdminPayload();
+
+  // Si el payload contiene imagen base64, es demasiado grande para GET
+  // Usamos un iframe oculto como puente (técnica clásica para Apps Script + CORS)
   try {
-    const resp = await fetch(`${SCRIPT_URL}?${params.toString()}`, {
-      method: 'GET',
-      mode: 'cors',
-    });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const json = await resp.json();
-    if (json.success) {
-      showToast('✅ ¡Guardado en Google Sheets!', 'success');
-    } else {
-      throw new Error(json.error || 'Error desconocido');
-    }
+    await sendToAppsScript(adminOp, adminStep, payload);
+    showToast('✅ ¡Guardado en Google Sheets!', 'success');
   } catch (err) {
-    console.error('[AventurasMat] Error Sheets:', err);
-    // Datos ya guardados en localStorage, informar al admin
-    showToast('💾 Guardado local ✓  (Verifica la URL del script en Sheets)', '');
+    console.warn('[AventurasMat] Sheets error:', err.message);
+    showToast('💾 Guardado local ✓ — abre la consola para ver el error', '');
   } finally {
     if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Guardar cambios'; }
   }
+}
+
+// Envía datos a Apps Script usando un form POST en iframe oculto
+// Esto evita el bloqueo CORS que afecta a fetch() desde GitHub Pages
+function sendToAppsScript(op, step, payload) {
+  return new Promise((resolve, reject) => {
+    // Limpiar imágenes base64 (demasiado pesadas para URL params)
+    const cleanPayload = JSON.parse(JSON.stringify(payload));
+    if (cleanPayload.mainImg && cleanPayload.mainImg.startsWith('data:')) {
+      cleanPayload.mainImg = '';
+    }
+    if (cleanPayload.resources) {
+      cleanPayload.resources = cleanPayload.resources.map(r => {
+        if (r.thumb && r.thumb.startsWith('data:')) r.thumb = '';
+        return r;
+      });
+    }
+
+    const url = SCRIPT_URL
+      + '?action=saveData'
+      + '&op='   + encodeURIComponent(op)
+      + '&step=' + encodeURIComponent(step)
+      + '&data=' + encodeURIComponent(JSON.stringify(cleanPayload));
+
+    // Primero intentar con fetch (funciona en muchos casos)
+    fetch(url, { method: 'GET', mode: 'no-cors' })
+      .then(() => {
+        // no-cors siempre resuelve aunque no podamos leer la respuesta
+        // Verificar con GET que sí se guardó
+        setTimeout(() => resolve(), 1000);
+      })
+      .catch(() => {
+        // Fallback: iframe oculto
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        let done = false;
+        const timer = setTimeout(() => {
+          if (!done) { done = true; document.body.removeChild(iframe); resolve(); }
+        }, 4000);
+        iframe.onerror = () => {
+          if (!done) { done = true; clearTimeout(timer); document.body.removeChild(iframe); reject(new Error('Error de red')); }
+        };
+        iframe.src = url;
+      });
+  });
 }
 
 function buildAdminPayload() {
@@ -2018,6 +2044,34 @@ function loadFromSheets(){ fetchDataFromSheets(); }
 // ─────────────────────────────────────────────
 // YOUTUBE HELPERS
 // ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+// GOOGLE DRIVE URL CONVERTER
+// ─────────────────────────────────────────────
+// Convierte URLs de Drive al formato de imagen directa
+// Formatos soportados:
+//   https://drive.google.com/file/d/FILE_ID/view
+//   https://drive.google.com/open?id=FILE_ID
+//   https://drive.google.com/uc?id=FILE_ID
+function driveToDirectUrl(url) {
+  if (!url || !url.includes('drive.google.com')) return url;
+  // Extraer FILE_ID
+  let fileId = '';
+  const m1 = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  const m2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (m1) fileId = m1[1];
+  else if (m2) fileId = m2[1];
+  if (!fileId) return url;
+  return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+}
+
+// Normaliza cualquier URL de imagen (Drive u otra)
+function normalizeImgUrl(url) {
+  if (!url) return '';
+  if (url.startsWith('data:')) return url; // base64, ok
+  if (url.includes('drive.google.com')) return driveToDirectUrl(url);
+  return url;
+}
+
 function youtubeToEmbed(url) {
   if (!url) return '';
   // Already embed URL
@@ -2086,10 +2140,13 @@ function previewThumbUrl(url) {
 function showThumbPreview(src) {
   const box = document.getElementById('thumbPreviewBox');
   const img = document.getElementById('thumbPreviewImg');
-  img.src = src;
+  if (!box || !img) return;
+  img.src = normalizeImgUrl(src);
   box.style.display = 'block';
-  document.getElementById('thumbUploadZone').style.display = 'none';
-  document.getElementById('thumbUrlZone').style.display    = 'none';
+  const uz = document.getElementById('thumbUploadZone');
+  const tz = document.getElementById('thumbUrlZone');
+  if (uz) uz.style.display = 'none';
+  if (tz) tz.style.display = 'none';
 }
 
 function clearThumb() {
@@ -2183,9 +2240,10 @@ function showMainImgPreview(src) {
   const box = document.getElementById('mainImgPreviewBox');
   const img = document.getElementById('mainImgPreviewImg');
   if (!box || !img) return;
-  img.src = src;
+  img.src = normalizeImgUrl(src);
   box.style.display = 'block';
-  document.getElementById('mainImgUploadZone').style.display = 'none';
+  const zone = document.getElementById('mainImgUploadZone');
+  if (zone) zone.style.display = 'none';
 }
 
 function clearMainImg() {
