@@ -490,9 +490,9 @@
       transition: background var(--transition);
     }
     .main-expand-btn:hover { background: rgba(0,0,0,.8); }
-    .main-res-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--gray-900); }
-    .main-res-desc  { font-size: .87rem; color: var(--gray-500); line-height: 1.6; }
-    .main-res-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .main-res-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--gray-900); text-align: center; }
+    .main-res-desc  { font-size: .87rem; color: var(--gray-500); line-height: 1.6; text-align: center; }
+    .main-res-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; }
     .res-action-btn {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 8px 16px; border-radius: var(--radius-sm);
@@ -504,6 +504,22 @@
     .res-action-btn:hover { background: var(--gray-100); border-color: var(--gray-500); }
     .res-action-btn.primary { background: var(--blue-600); border-color: var(--blue-600); color: white; }
     .res-action-btn.primary:hover { background: var(--blue-700); }
+
+    /* Bloque centrado: título del recurso (ej. RETO 1) + botón JUGAR */
+    .main-res-header {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 12px; text-align: center; padding: 4px 0;
+    }
+    .res-action-btn.play-btn {
+      background: var(--orange-500); border-color: var(--orange-500); color: white;
+      padding: 11px 30px; font-size: .95rem; font-weight: 800;
+      font-family: 'Nunito', sans-serif; letter-spacing: .03em;
+      border-radius: 100px; box-shadow: 0 4px 14px rgba(249,115,22,.35);
+    }
+    .res-action-btn.play-btn:hover {
+      background: var(--orange-600); border-color: var(--orange-600);
+      transform: translateY(-1px); box-shadow: 0 6px 18px rgba(249,115,22,.45);
+    }
 
     /* Badge tipo */
     .res-type-badge {
@@ -1594,11 +1610,11 @@ function renderDesarrollo(data) {
 
   const mainImg   = normalizeImgUrl(data.mainImg || '');
   const typeConfig = {
-    pdf:   { badge:'badge-pdf',   icon:'📄', label:'PDF',    btnPrimary:'⬇️ Descargar',     btnSecondary:'↗ Abrir' },
-    audio: { badge:'badge-audio', icon:'🎵', label:'Audio',  btnPrimary:'▶️ Reproducir',    btnSecondary:'⬇️ Descargar' },
-    img:   { badge:'badge-img',   icon:'🖼️', label:'Imagen', btnPrimary:'🔍 Ver imagen',    btnSecondary:null },
-    video: { badge:'badge-video', icon:'🎬', label:'Video',  btnPrimary:'▶️ Ver video',     btnSecondary:null },
-    link:  { badge:'badge-link',  icon:'🔗', label:'Enlace', btnPrimary:'↗ Ir al recurso',  btnSecondary:null },
+    pdf:   { badge:'badge-pdf',   icon:'📄', label:'PDF',    btnPrimary:'🎮 JUGAR', btnSecondary:null },
+    audio: { badge:'badge-audio', icon:'🎵', label:'Audio',  btnPrimary:'🎮 JUGAR', btnSecondary:null },
+    img:   { badge:'badge-img',   icon:'🖼️', label:'Imagen', btnPrimary:'🎮 JUGAR', btnSecondary:null },
+    video: { badge:'badge-video', icon:'🎬', label:'Video',  btnPrimary:'🎮 JUGAR', btnSecondary:null },
+    link:  { badge:'badge-link',  icon:'🔗', label:'Enlace', btnPrimary:'🎮 JUGAR', btnSecondary:null },
   };
 
   // Always show 4 slots — fill with real resources, rest are empty placeholders
@@ -1652,12 +1668,13 @@ function renderDesarrollo(data) {
 
   const mainTitleHtml = first
     ? `<div class="res-type-badge ${firstCfg.badge}" id="mainBadge">${firstCfg.icon} ${firstCfg.label}</div>
-       <p class="main-res-title" id="mainTitle">${first.title||'Recurso'}</p>
-       <p class="main-res-desc"  id="mainDesc">${first.desc||''}</p>
-       <div class="main-res-actions" id="mainActions">
-         <a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn primary">${firstCfg.btnPrimary}</a>
-         ${firstCfg.btnSecondary ? `<a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn">${firstCfg.btnSecondary}</a>` : ''}
-       </div>`
+       <div class="main-res-header">
+         <p class="main-res-title" id="mainTitle">${first.title||'Recurso'}</p>
+         <div class="main-res-actions" id="mainActions">
+           <a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn play-btn">${firstCfg.btnPrimary}</a>
+         </div>
+       </div>
+       <p class="main-res-desc"  id="mainDesc">${first.desc||''}</p>`
     : `<p class="main-res-desc" style="color:var(--gray-500);text-align:center;padding:10px 0" id="mainTitle">Selecciona un recurso de la barra izquierda</p>
        <div id="mainBadge" style="display:none"></div>
        <p id="mainDesc"></p>
@@ -1711,8 +1728,7 @@ function selectResource(idx) {
   if (badgeEl)   { badgeEl.className = `res-type-badge ${cfg.badge}`; badgeEl.textContent = `${cfg.icon} ${cfg.label}`; }
   if (actionsEl) {
     const resUrl = r.url || '#';
-    const sec = cfg.btnSecondary ? `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn">${cfg.btnSecondary}</a>` : '';
-    actionsEl.innerHTML = `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn primary">${cfg.btnPrimary}</a>${sec}`;
+    actionsEl.innerHTML = `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn play-btn">${cfg.btnPrimary}</a>`;
   }
 }
 
