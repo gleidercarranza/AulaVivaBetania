@@ -419,6 +419,67 @@
       line-height: 1.6;
     }
 
+    /* ═══════════════════════════════════════════════
+       OPERATION HERO PANELS
+    ═══════════════════════════════════════════════ */
+    .op-hero {
+      display: none;
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      min-height: 180px;
+      margin-bottom: 0;
+    }
+    .op-hero.active { display: block; }
+
+    .op-hero-inner {
+      display: flex;
+      align-items: center;
+      padding: 28px 32px;
+      gap: 20px;
+      min-height: 180px;
+      position: relative;
+    }
+
+    .op-hero-text { position: relative; z-index: 2; color: white; max-width: 300px; }
+    .op-hero-badge {
+      display: inline-block;
+      background: rgba(255,255,255,.18);
+      border: 1.5px solid rgba(255,255,255,.3);
+      border-radius: 100px; padding: 4px 14px;
+      font-size: .72rem; font-weight: 800; color: white;
+      margin-bottom: 10px; text-transform: uppercase; letter-spacing: .08em;
+    }
+    .op-hero-title {
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 900; color: white; margin: 0 0 8px; line-height: 1.1;
+    }
+    .op-hero-desc { font-size: .85rem; color: rgba(255,255,255,.82); margin: 0; line-height: 1.5; }
+
+    .op-hero-suma  { background: #1a4db5; }
+    .op-hero-resta { background: #ea580c; }
+    .op-hero-multi { background: #16a34a; }
+    .op-hero-div   { background: #7c3aed; }
+
+    /* Floating elements inside heroes */
+    .hf { position: absolute; pointer-events: none; }
+
+    @keyframes hbob  { 0%,100%{transform:translateY(0)}           50%{transform:translateY(-10px)} }
+    @keyframes hbob2 { 0%,100%{transform:translateY(0) rotate(-12deg)} 50%{transform:translateY(-8px) rotate(-12deg)} }
+    @keyframes hbob3 { 0%,100%{transform:translateY(0) rotate(8deg)}   50%{transform:translateY(-12px) rotate(8deg)} }
+    @keyframes hspin { from{transform:rotate(0deg)}  to{transform:rotate(360deg)} }
+    @keyframes hspin2{ from{transform:rotate(0deg)}  to{transform:rotate(-360deg)} }
+    @keyframes hpulse{ 0%,100%{transform:scale(1)}   50%{transform:scale(1.12)} }
+    @keyframes hfly  { 0%{transform:translateX(0) translateY(0)} 25%{transform:translateX(8px) translateY(-14px)} 50%{transform:translateX(16px) translateY(-4px)} 75%{transform:translateX(8px) translateY(-18px)} 100%{transform:translateX(0) translateY(0)} }
+    @keyframes htwirl{ 0%,100%{transform:rotate(-5deg) scale(1)} 50%{transform:rotate(5deg) scale(1.08)} }
+
+    @media (max-width: 768px) {
+      .op-hero-inner { padding: 20px 18px; min-height: 150px; }
+      .op-hero-title { font-size: 1.3rem; }
+      .hf.hide-mobile { display: none; }
+    }
+
     /* ── Desarrollo layout: sidebar + main ── */
     .dev-layout {
       display: grid;
@@ -1434,6 +1495,134 @@
 <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
 <div class="content-wrap">
 
+  <!-- ═══════════════ OPERATION HEROES ═══════════════ -->
+
+  <!-- SUMA hero -->
+  <div class="op-hero op-hero-suma active" id="hero-suma">
+    <div class="op-hero-inner">
+      <svg class="hf" style="right:0;top:0;width:100%;height:100%;opacity:.1" viewBox="0 0 700 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="580" cy="30"  r="90"  fill="white"/>
+        <circle cx="640" cy="160" r="60"  fill="white"/>
+        <circle cx="420" cy="170" r="40"  fill="white"/>
+      </svg>
+      <div class="op-hero-text">
+        <div class="op-hero-badge">➕ Operación</div>
+        <h2 class="op-hero-title">La Suma</h2>
+        <p class="op-hero-desc">Unimos cantidades para encontrar el total. ¡Cada número suma algo especial!</p>
+      </div>
+      <!-- Manzana 1 -->
+      <svg class="hf hide-mobile" style="right:220px;top:18px;animation:hbob 3s ease-in-out infinite" width="52" height="58" viewBox="0 0 48 52" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 10 C10 10 4 22 4 32 C4 44 12 52 20 52 C22 52 23 50 24 50 C25 50 26 52 28 52 C36 52 44 44 44 32 C44 22 38 10 24 10Z" fill="#f87171"/>
+        <path d="M24 8 C22 2 28 0 30 4" stroke="#4ade80" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="15" cy="26" rx="4" ry="6" fill="rgba(255,255,255,.3)"/>
+        <text x="24" y="36" font-size="13" font-weight="900" fill="white" font-family="Nunito,sans-serif" text-anchor="middle">1</text>
+      </svg>
+      <div class="hf hide-mobile" style="right:172px;top:70px;font-size:34px;font-weight:900;color:rgba(255,255,255,.7);animation:hpulse 2s ease-in-out infinite">+</div>
+      <!-- Manzana 2 -->
+      <svg class="hf hide-mobile" style="right:100px;top:14px;animation:hbob 3s ease-in-out infinite;animation-delay:.6s" width="52" height="58" viewBox="0 0 48 52" xmlns="http://www.w3.org/2000/svg">
+        <path d="M24 10 C10 10 4 22 4 32 C4 44 12 52 20 52 C22 52 23 50 24 50 C25 50 26 52 28 52 C36 52 44 44 44 32 C44 22 38 10 24 10Z" fill="#f87171"/>
+        <path d="M24 8 C22 2 28 0 30 4" stroke="#4ade80" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+        <ellipse cx="15" cy="26" rx="4" ry="6" fill="rgba(255,255,255,.3)"/>
+        <text x="24" y="36" font-size="13" font-weight="900" fill="white" font-family="Nunito,sans-serif" text-anchor="middle">2</text>
+      </svg>
+      <div class="hf hide-mobile" style="right:30px;top:68px;font-size:30px;font-weight:900;color:#f9c74f;animation:hpulse 2s ease-in-out infinite;animation-delay:.4s">= 3</div>
+      <!-- Bloque resultado -->
+      <svg class="hf hide-mobile" style="right:90px;bottom:18px;animation:hbob3 4s ease-in-out infinite" width="90" height="36" viewBox="0 0 90 36" xmlns="http://www.w3.org/2000/svg">
+        <rect width="90" height="36" rx="8" fill="#60a5fa"/>
+        <text x="45" y="24" font-size="13" font-weight="900" fill="#1e3a8a" font-family="Nunito,sans-serif" text-anchor="middle">5 + 3 = 8</text>
+      </svg>
+      <div class="hf hide-mobile" style="right:240px;bottom:22px;font-size:22px;color:#f9c74f;animation:htwirl 2.5s ease-in-out infinite">★</div>
+    </div>
+  </div>
+
+  <!-- RESTA hero -->
+  <div class="op-hero op-hero-resta" id="hero-resta">
+    <div class="op-hero-inner">
+      <svg class="hf" style="right:0;top:0;width:100%;height:100%;opacity:.1" viewBox="0 0 700 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="560" cy="20"  r="100" fill="white"/>
+        <circle cx="640" cy="170" r="55"  fill="white"/>
+      </svg>
+      <div class="op-hero-text">
+        <div class="op-hero-badge">➖ Operación</div>
+        <h2 class="op-hero-title">La Resta</h2>
+        <p class="op-hero-desc">Quitamos una cantidad para encontrar la diferencia. ¡Como un cohete que despega!</p>
+      </div>
+      <!-- Cohete -->
+      <svg class="hf hide-mobile" style="right:160px;top:8px;animation:hfly 3.5s ease-in-out infinite" width="65" height="115" viewBox="0 0 60 110" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="30" cy="45" rx="18" ry="38" fill="#fef3c7"/>
+        <polygon points="30,2 14,30 46,30" fill="#f9c74f"/>
+        <circle cx="30" cy="48" r="10" fill="#60a5fa"/>
+        <circle cx="30" cy="48" r="6"  fill="#1e3a8a"/>
+        <polygon points="12,70 4,90 20,80"  fill="#fda4af"/>
+        <polygon points="48,70 56,90 40,80" fill="#fda4af"/>
+        <ellipse cx="30" cy="85" rx="8" ry="14" fill="#fb923c" opacity=".9"/>
+        <ellipse cx="30" cy="90" rx="5" ry="10" fill="#f9c74f"/>
+      </svg>
+      <div class="hf hide-mobile" style="right:260px;top:28px;font-size:28px;font-weight:900;color:#fef3c7;animation:hbob 2.2s ease-in-out infinite">10</div>
+      <div class="hf hide-mobile" style="right:90px;bottom:28px;font-size:22px;font-weight:900;color:rgba(255,255,255,.7);animation:hbob 2.8s ease-in-out infinite;animation-delay:.5s">− 4</div>
+      <div class="hf hide-mobile" style="right:28px;top:68px;font-size:26px;font-weight:900;color:#f9c74f;animation:hpulse 2s ease-in-out infinite">= 6</div>
+      <div class="hf hide-mobile" style="right:68px;top:20px;font-size:18px;color:rgba(255,255,255,.4);animation:hbob3 3s ease-in-out infinite">★</div>
+    </div>
+  </div>
+
+  <!-- MULTIPLICACIÓN hero -->
+  <div class="op-hero op-hero-multi" id="hero-multi">
+    <div class="op-hero-inner">
+      <svg class="hf" style="right:0;top:0;width:100%;height:100%;opacity:.1" viewBox="0 0 700 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="540" cy="30"  r="110" fill="white"/>
+        <circle cx="650" cy="170" r="60"  fill="white"/>
+      </svg>
+      <div class="op-hero-text">
+        <div class="op-hero-badge">✖️ Operación</div>
+        <h2 class="op-hero-title">Multiplicación</h2>
+        <p class="op-hero-desc">¡Suma rápida y mágica! Las estrellas se multiplican y llenan el cielo.</p>
+      </div>
+      <div class="hf hide-mobile" style="right:70px;top:16px;font-size:42px;color:#f9c74f;animation:hspin 6s linear infinite">★</div>
+      <div class="hf hide-mobile" style="right:140px;top:28px;font-size:26px;color:#fde68a;animation:hspin2 4s linear infinite">★</div>
+      <div class="hf hide-mobile" style="right:200px;top:55px;font-size:18px;color:#fef3c7;animation:hspin 8s linear infinite;animation-delay:.5s">★</div>
+      <div class="hf hide-mobile" style="right:108px;bottom:24px;font-size:22px;color:#f9c74f;animation:hspin2 5s linear infinite;animation-delay:1s">★</div>
+      <div class="hf hide-mobile" style="right:220px;bottom:14px;font-size:30px;color:#fde68a;animation:hspin 7s linear infinite;animation-delay:.3s">★</div>
+      <div class="hf hide-mobile" style="right:52px;bottom:18px;font-size:16px;color:#fef3c7;animation:hspin2 3s linear infinite">★</div>
+      <div class="hf hide-mobile" style="right:255px;top:24px;font-size:20px;font-weight:900;color:rgba(255,255,255,.85);animation:hpulse 2.5s ease-in-out infinite">3 × 4</div>
+      <div class="hf hide-mobile" style="right:248px;bottom:24px;font-size:24px;font-weight:900;color:#f9c74f;animation:hpulse 2s ease-in-out infinite;animation-delay:.3s">= 12 ★</div>
+    </div>
+  </div>
+
+  <!-- DIVISIÓN hero -->
+  <div class="op-hero op-hero-div" id="hero-div">
+    <div class="op-hero-inner">
+      <svg class="hf" style="right:0;top:0;width:100%;height:100%;opacity:.1" viewBox="0 0 700 180" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="560" cy="40"  r="100" fill="white"/>
+        <circle cx="660" cy="180" r="55"  fill="white"/>
+      </svg>
+      <div class="op-hero-text">
+        <div class="op-hero-badge">➗ Operación</div>
+        <h2 class="op-hero-title">La División</h2>
+        <p class="op-hero-desc">Repartir en partes iguales. ¡Como dividir una pizza entre amigos!</p>
+      </div>
+      <!-- Pizza -->
+      <svg class="hf hide-mobile" style="right:90px;top:10px;animation:hbob 3.5s ease-in-out infinite" width="130" height="155" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="60" cy="60" r="54" fill="#fbbf24"/>
+        <circle cx="60" cy="60" r="48" fill="#f97316"/>
+        <line x1="60" y1="12" x2="60" y2="108" stroke="#fef3c7" stroke-width="2.5" stroke-dasharray="4,2"/>
+        <line x1="13" y1="60" x2="107" y2="60" stroke="#fef3c7" stroke-width="2.5" stroke-dasharray="4,2"/>
+        <line x1="22" y1="22" x2="98" y2="98" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4,2" opacity=".6"/>
+        <line x1="98" y1="22" x2="22" y2="98" stroke="#fef3c7" stroke-width="2" stroke-dasharray="4,2" opacity=".6"/>
+        <circle cx="60" cy="36" r="5" fill="#ef4444"/><circle cx="36" cy="60" r="5" fill="#ef4444"/>
+        <circle cx="84" cy="60" r="5" fill="#ef4444"/><circle cx="60" cy="84" r="5" fill="#ef4444"/>
+        <circle cx="44" cy="44" r="4" fill="#65a30d"/><circle cx="76" cy="44" r="4" fill="#65a30d"/>
+        <circle cx="44" cy="76" r="4" fill="#65a30d"/><circle cx="76" cy="76" r="4" fill="#65a30d"/>
+        <circle cx="60" cy="60" r="54" fill="none" stroke="#d97706" stroke-width="3"/>
+        <circle cx="60" cy="60" r="8" fill="#fef3c7"/>
+        <text x="60" y="65" font-size="9" font-weight="900" fill="#92400e" font-family="Nunito,sans-serif" text-anchor="middle">÷8</text>
+      </svg>
+      <div class="hf hide-mobile" style="right:250px;top:30px;font-size:22px;font-weight:900;color:rgba(255,255,255,.85);animation:hpulse 2.5s ease-in-out infinite">8 ÷ 4</div>
+      <div class="hf hide-mobile" style="right:245px;bottom:28px;font-size:26px;font-weight:900;color:#f9c74f;animation:hpulse 2s ease-in-out infinite;animation-delay:.4s">= 2 🍕</div>
+      <div class="hf hide-mobile" style="right:60px;bottom:14px;font-size:16px;color:#fde68a;animation:hbob3 2.8s ease-in-out infinite">✦</div>
+      <div class="hf hide-mobile" style="right:230px;bottom:12px;font-size:14px;color:rgba(255,255,255,.5);animation:hbob 3.2s ease-in-out infinite;animation-delay:.7s">✦</div>
+    </div>
+  </div>
+
   <!-- Step Progress Track -->
   <div class="progress-track">
     <div class="progress-step active" data-step="inicio" onclick="switchStep('inicio')">
@@ -1774,6 +1963,12 @@ function switchOp(op) {
   document.getElementById('heroBadge').textContent  = `${h.emoji} Operación activa`;
   document.getElementById('heroTitle').innerHTML    = h.title;
   document.getElementById('heroDesc').textContent   = h.desc;
+
+  // Switch animated hero panels
+  const heroMap = { suma:'hero-suma', resta:'hero-resta', multiplicacion:'hero-multi', division:'hero-div' };
+  document.querySelectorAll('.op-hero').forEach(h => h.classList.remove('active'));
+  const heroEl = document.getElementById(heroMap[op]);
+  if (heroEl) heroEl.classList.add('active');
 
   if (isAdmin) adminSelectOp(op);
   renderCurrentPanel();
