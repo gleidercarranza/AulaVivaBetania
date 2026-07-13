@@ -464,15 +464,6 @@
     .res-item-title { font-size: .75rem; font-weight: 600; color: var(--gray-700); line-height: 1.3; }
     .res-item.active .res-item-title { color: var(--blue-700); }
 
-    .res-item-play-btn {
-      display: inline-flex; align-items: center; gap: 3px;
-      background: var(--orange-500); color: white; text-decoration: none;
-      font-family: 'Nunito', sans-serif; font-weight: 800; font-size: .62rem;
-      letter-spacing: .03em; padding: 3px 9px; border-radius: 100px;
-      margin-bottom: 3px; transition: background var(--transition);
-    }
-    .res-item-play-btn:hover { background: var(--orange-600); }
-
     /* Main area */
     .main-img-box {
       width: 100%; aspect-ratio: 16/9;
@@ -499,9 +490,9 @@
       transition: background var(--transition);
     }
     .main-expand-btn:hover { background: rgba(0,0,0,.8); }
-    .main-res-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--gray-900); text-align: center; }
-    .main-res-desc  { font-size: .87rem; color: var(--gray-500); line-height: 1.6; text-align: center; }
-    .main-res-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; justify-content: center; }
+    .main-res-title { font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 1.05rem; color: var(--gray-900); }
+    .main-res-desc  { font-size: .87rem; color: var(--gray-500); line-height: 1.6; }
+    .main-res-actions { display: flex; gap: 8px; flex-wrap: wrap; }
     .res-action-btn {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 8px 16px; border-radius: var(--radius-sm);
@@ -513,22 +504,6 @@
     .res-action-btn:hover { background: var(--gray-100); border-color: var(--gray-500); }
     .res-action-btn.primary { background: var(--blue-600); border-color: var(--blue-600); color: white; }
     .res-action-btn.primary:hover { background: var(--blue-700); }
-
-    /* Bloque centrado: título del recurso (ej. RETO 1) + botón JUGAR */
-    .main-res-header {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 12px; text-align: center; padding: 4px 0;
-    }
-    .res-action-btn.play-btn {
-      background: var(--orange-500); border-color: var(--orange-500); color: white;
-      padding: 11px 30px; font-size: .95rem; font-weight: 800;
-      font-family: 'Nunito', sans-serif; letter-spacing: .03em;
-      border-radius: 100px; box-shadow: 0 4px 14px rgba(249,115,22,.35);
-    }
-    .res-action-btn.play-btn:hover {
-      background: var(--orange-600); border-color: var(--orange-600);
-      transform: translateY(-1px); box-shadow: 0 6px 18px rgba(249,115,22,.45);
-    }
 
     /* Badge tipo */
     .res-type-badge {
@@ -994,6 +969,91 @@
        RESPONSIVE
     ═══════════════════════════════════════════════ */
     /* ═══════════════════════════════════════════════
+       WELCOME SCREEN
+    ═══════════════════════════════════════════════ */
+    #welcomeScreen {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #5b4fcf;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      transition: opacity .6s ease, visibility .6s ease;
+    }
+    #welcomeScreen.hiding {
+      opacity: 0; visibility: hidden;
+    }
+    .wb-inner {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .wb-left {
+      position: relative; z-index: 2;
+      padding: 40px 32px 40px 48px;
+      max-width: 54%;
+    }
+    .wb-subtitle {
+      font-size: 12px; font-weight: 800; color: #c4b5fd;
+      text-transform: uppercase; letter-spacing: .14em; margin: 0 0 6px;
+    }
+    .wb-title {
+      font-family: 'Nunito', sans-serif;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      font-weight: 900; color: white; line-height: 1.08; margin: 0 0 4px;
+    }
+    .wb-title-accent { color: #f9c74f; display: block; }
+    .wb-grade {
+      font-size: 15px; font-weight: 700; color: #c4b5fd; margin: 14px 0 28px;
+    }
+    .wb-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 30px; background: #f9c74f; color: #1e1060;
+      font-family: 'Nunito', sans-serif;
+      font-size: 16px; font-weight: 900;
+      border-radius: 50px; border: none; cursor: pointer;
+      box-shadow: 0 5px 0 #c9992c;
+      transition: transform .12s, box-shadow .12s;
+    }
+    .wb-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #c9992c; }
+    .wb-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #c9992c; }
+    .wb-btn-arrow {
+      width: 28px; height: 28px; background: #1e1060;
+      border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      color: #f9c74f; font-size: 14px;
+    }
+    .wb-ops {
+      display: flex; gap: 8px; margin-top: 24px; flex-wrap: wrap;
+    }
+    .wb-op {
+      background: rgba(255,255,255,.13);
+      border: 1.5px solid rgba(255,255,255,.22);
+      border-radius: 100px; padding: 5px 13px;
+      font-size: 11px; font-weight: 700; color: rgba(255,255,255,.9);
+    }
+    .wb-star {
+      position: absolute; color: #f9c74f;
+      animation: wb-twinkle 2s infinite alternate;
+    }
+    @keyframes wb-twinkle {
+      from { opacity: .3; transform: scale(.8); }
+      to   { opacity: 1; transform: scale(1.15); }
+    }
+    @keyframes wb-bob  { 0%,100%{transform:translateY(0)}          50%{transform:translateY(-9px)} }
+    @keyframes wb-bob2 { 0%,100%{transform:translateY(0) rotate(-8deg)}  50%{transform:translateY(-7px) rotate(-8deg)} }
+    @keyframes wb-bob3 { 0%,100%{transform:translateY(0) rotate(15deg)} 50%{transform:translateY(-8px) rotate(15deg)} }
+    @keyframes wb-bob4 { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-6px) rotate(-5deg)} }
+    @keyframes wb-bob5 { 0%,100%{transform:translateY(0)}          50%{transform:translateY(-10px)} }
+
+    @media (max-width: 768px) {
+      .wb-left { padding: 24px; max-width: 100%; }
+      .wb-title { font-size: 1.6rem; }
+      #welcomeScreen svg.wb-deco { display: none; }
+    }
+    @media (max-width: 420px) {
+      .wb-grade { margin-bottom: 18px; }
+      .wb-ops { display: none; }
+    }
+
+    /* ═══════════════════════════════════════════════
        RESPONSIVE — TABLET (≤ 900px)
     ═══════════════════════════════════════════════ */
     @media (max-width: 900px) {
@@ -1167,6 +1227,164 @@
   </style>
 </head>
 <body>
+
+<!-- ═══════════════ WELCOME SCREEN ═══════════════ -->
+<div id="welcomeScreen">
+  <div class="wb-inner">
+
+    <!-- BG SVG circles + confetti -->
+    <svg class="wb-deco" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="950" cy="100" r="180" fill="#7c6fd4" opacity=".5"/>
+      <circle cx="1100" cy="580" r="150" fill="#4338ca" opacity=".4"/>
+      <circle cx="100"  cy="600" r="120" fill="#6d5fd6" opacity=".3"/>
+      <circle cx="300"  cy="40"  r="80"  fill="#a78bfa" opacity=".25"/>
+      <circle cx="520"  cy="660" r="60"  fill="#818cf8" opacity=".2"/>
+      <!-- confetti -->
+      <circle cx="480" cy="60"  r="8"  fill="#f472b6"/>
+      <circle cx="820" cy="220" r="7"  fill="#4ade80"/>
+      <circle cx="200" cy="270" r="6"  fill="#f9c74f"/>
+      <circle cx="700" cy="620" r="9"  fill="#4cc9f0"/>
+      <circle cx="80"  cy="160" r="7"  fill="#fb923c"/>
+      <circle cx="1050" cy="320" r="6" fill="#f9c74f"/>
+      <!-- triangles -->
+      <polygon points="0,0 120,0 0,120"         fill="#a78bfa" opacity=".7"/>
+      <polygon points="1200,700 1080,700 1200,580" fill="#f472b6" opacity=".7"/>
+      <polygon points="1200,0 1200,90 1110,0"   fill="#f9c74f"  opacity=".6"/>
+      <polygon points="0,700 0,620 80,700"       fill="#4ade80"  opacity=".5"/>
+    </svg>
+
+    <!-- CUADERNO (arriba derecha) -->
+    <svg class="wb-deco" style="position:absolute;right:18%;top:5%;animation:wb-bob 3.2s ease-in-out infinite" width="110" height="135" viewBox="0 0 90 110" xmlns="http://www.w3.org/2000/svg">
+      <rect x="12" y="8" width="66" height="90" rx="6" fill="#4ade80"/>
+      <rect x="18" y="8" width="60" height="90" rx="4" fill="#f0fdf4"/>
+      <rect x="8"  y="8" width="12" height="90" rx="4" fill="#22c55e"/>
+      <circle cx="14" cy="28" r="4" fill="#fff" stroke="#22c55e" stroke-width="1.5"/>
+      <circle cx="14" cy="44" r="4" fill="#fff" stroke="#22c55e" stroke-width="1.5"/>
+      <circle cx="14" cy="60" r="4" fill="#fff" stroke="#22c55e" stroke-width="1.5"/>
+      <circle cx="14" cy="76" r="4" fill="#fff" stroke="#22c55e" stroke-width="1.5"/>
+      <line x1="24" y1="32" x2="72" y2="32" stroke="#86efac" stroke-width="1.5"/>
+      <line x1="24" y1="42" x2="72" y2="42" stroke="#86efac" stroke-width="1.5"/>
+      <line x1="24" y1="52" x2="72" y2="52" stroke="#86efac" stroke-width="1.5"/>
+      <line x1="24" y1="62" x2="72" y2="62" stroke="#86efac" stroke-width="1.5"/>
+      <line x1="24" y1="72" x2="72" y2="72" stroke="#86efac" stroke-width="1.5"/>
+      <text x="36" y="22" font-size="13" font-weight="900" fill="#22c55e" font-family="Nunito,sans-serif">2+3=5</text>
+    </svg>
+
+    <!-- LÁPIZ (derecha centro) -->
+    <svg class="wb-deco" style="position:absolute;right:9%;top:10%;animation:wb-bob2 2.8s ease-in-out infinite" width="40" height="180" viewBox="0 0 36 160" xmlns="http://www.w3.org/2000/svg">
+      <rect x="8"  y="20" width="20" height="110" rx="2" fill="#f9c74f"/>
+      <rect x="8"  y="20" width="20" height="14"  rx="2" fill="#fb923c"/>
+      <rect x="8"  y="8"  width="20" height="14"  rx="3" fill="#fda4af"/>
+      <rect x="8"  y="18" width="20" height="4"         fill="#9ca3af"/>
+      <polygon points="8,130 28,130 18,155" fill="#fef3c7"/>
+      <polygon points="14,130 22,130 18,150" fill="#374151"/>
+      <line x1="8" y1="50"  x2="28" y2="50"  stroke="#fb923c" stroke-width="1" opacity=".4"/>
+      <line x1="8" y1="80"  x2="28" y2="80"  stroke="#fb923c" stroke-width="1" opacity=".4"/>
+      <line x1="8" y1="110" x2="28" y2="110" stroke="#fb923c" stroke-width="1" opacity=".4"/>
+    </svg>
+
+    <!-- REGLA (abajo derecha) -->
+    <svg class="wb-deco" style="position:absolute;right:8%;bottom:12%;animation:wb-bob3 3.5s ease-in-out infinite" width="240" height="46" viewBox="0 0 200 42" xmlns="http://www.w3.org/2000/svg">
+      <rect x="0" y="6" width="200" height="30" rx="4" fill="#4cc9f0"/>
+      <rect x="0" y="6" width="200" height="30" rx="4" fill="none" stroke="#0ea5e9" stroke-width="1.5"/>
+      <line x1="20"  y1="6" x2="20"  y2="18" stroke="white" stroke-width="1.5"/>
+      <line x1="40"  y1="6" x2="40"  y2="22" stroke="white" stroke-width="2"/>
+      <line x1="60"  y1="6" x2="60"  y2="18" stroke="white" stroke-width="1.5"/>
+      <line x1="80"  y1="6" x2="80"  y2="22" stroke="white" stroke-width="2"/>
+      <line x1="100" y1="6" x2="100" y2="26" stroke="white" stroke-width="2.5"/>
+      <line x1="120" y1="6" x2="120" y2="22" stroke="white" stroke-width="2"/>
+      <line x1="140" y1="6" x2="140" y2="18" stroke="white" stroke-width="1.5"/>
+      <line x1="160" y1="6" x2="160" y2="22" stroke="white" stroke-width="2"/>
+      <line x1="180" y1="6" x2="180" y2="18" stroke="white" stroke-width="1.5"/>
+      <text x="37"  y="34" font-size="9" fill="white" font-family="Nunito,sans-serif" font-weight="700" text-anchor="middle">1</text>
+      <text x="77"  y="34" font-size="9" fill="white" font-family="Nunito,sans-serif" font-weight="700" text-anchor="middle">2</text>
+      <text x="117" y="34" font-size="9" fill="white" font-family="Nunito,sans-serif" font-weight="700" text-anchor="middle">3</text>
+      <text x="157" y="34" font-size="9" fill="white" font-family="Nunito,sans-serif" font-weight="700" text-anchor="middle">4</text>
+    </svg>
+
+    <!-- CALCULADORA (centro derecha) -->
+    <svg class="wb-deco" style="position:absolute;right:22%;bottom:14%;animation:wb-bob 4s ease-in-out infinite" width="80" height="105" viewBox="0 0 70 90" xmlns="http://www.w3.org/2000/svg">
+      <rect x="4" y="4" width="62" height="82" rx="8" fill="#818cf8"/>
+      <rect x="4" y="4" width="62" height="82" rx="8" fill="none" stroke="#6366f1" stroke-width="2"/>
+      <rect x="10" y="12" width="50" height="20" rx="4" fill="#e0e7ff"/>
+      <text x="56" y="27" font-size="11" font-weight="900" fill="#4338ca" font-family="Nunito,sans-serif" text-anchor="end">25+14</text>
+      <rect x="10" y="38" width="12" height="10" rx="2" fill="#c7d2fe"/>
+      <rect x="25" y="38" width="12" height="10" rx="2" fill="#c7d2fe"/>
+      <rect x="40" y="38" width="12" height="10" rx="2" fill="#f9c74f"/>
+      <rect x="55" y="38" width="9"  height="10" rx="2" fill="#fb923c"/>
+      <rect x="10" y="52" width="12" height="10" rx="2" fill="#c7d2fe"/>
+      <rect x="25" y="52" width="12" height="10" rx="2" fill="#c7d2fe"/>
+      <rect x="40" y="52" width="12" height="10" rx="2" fill="#c7d2fe"/>
+      <rect x="55" y="52" width="9"  height="10" rx="2" fill="#fb923c"/>
+      <rect x="10" y="66" width="12" height="10" rx="2" fill="#c7d2fe"/>
+      <rect x="25" y="66" width="12" height="10" rx="2" fill="#c7d2fe"/>
+      <rect x="40" y="66" width="26" height="10" rx="2" fill="#4ade80"/>
+      <text x="16" y="47" font-size="7" font-weight="900" fill="#4338ca" font-family="Nunito,sans-serif" text-anchor="middle">7</text>
+      <text x="31" y="47" font-size="7" font-weight="900" fill="#4338ca" font-family="Nunito,sans-serif" text-anchor="middle">8</text>
+      <text x="46" y="47" font-size="7" font-weight="900" fill="#4338ca" font-family="Nunito,sans-serif" text-anchor="middle">9</text>
+      <text x="59" y="47" font-size="8" font-weight="900" fill="white"   font-family="Nunito,sans-serif" text-anchor="middle">÷</text>
+      <text x="16" y="61" font-size="7" font-weight="900" fill="#4338ca" font-family="Nunito,sans-serif" text-anchor="middle">4</text>
+      <text x="31" y="61" font-size="7" font-weight="900" fill="#4338ca" font-family="Nunito,sans-serif" text-anchor="middle">5</text>
+      <text x="46" y="61" font-size="7" font-weight="900" fill="#4338ca" font-family="Nunito,sans-serif" text-anchor="middle">6</text>
+      <text x="59" y="61" font-size="8" font-weight="900" fill="white"   font-family="Nunito,sans-serif" text-anchor="middle">×</text>
+      <text x="16" y="75" font-size="7" font-weight="900" fill="#4338ca" font-family="Nunito,sans-serif" text-anchor="middle">1</text>
+      <text x="31" y="75" font-size="7" font-weight="900" fill="#4338ca" font-family="Nunito,sans-serif" text-anchor="middle">2</text>
+      <text x="53" y="75" font-size="7" font-weight="900" fill="#166534" font-family="Nunito,sans-serif" text-anchor="middle">=</text>
+    </svg>
+
+    <!-- MANZANA (esquina inferior izquierda) -->
+    <svg class="wb-deco" style="position:absolute;left:3%;bottom:8%;animation:wb-bob5 3.8s ease-in-out infinite" width="56" height="62" viewBox="0 0 48 52" xmlns="http://www.w3.org/2000/svg">
+      <path d="M24 10 C10 10 4 22 4 32 C4 44 12 52 20 52 C22 52 23 50 24 50 C25 50 26 52 28 52 C36 52 44 44 44 32 C44 22 38 10 24 10Z" fill="#f87171"/>
+      <path d="M24 8 C22 2 28 0 30 4" stroke="#4ade80" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="15" cy="26" rx="5" ry="7" fill="rgba(255,255,255,.25)"/>
+      <text x="24" y="36" font-size="14" font-weight="900" fill="white" font-family="Nunito,sans-serif" text-anchor="middle">A</text>
+    </svg>
+
+    <!-- SEGUNDO CUADERNO (azul, abajo izquierda) -->
+    <svg class="wb-deco" style="position:absolute;left:6%;bottom:15%;animation:wb-bob4 4.2s ease-in-out infinite" width="80" height="100" viewBox="0 0 90 110" xmlns="http://www.w3.org/2000/svg">
+      <rect x="12" y="8" width="66" height="90" rx="6" fill="#60a5fa"/>
+      <rect x="18" y="8" width="60" height="90" rx="4" fill="#eff6ff"/>
+      <rect x="8"  y="8" width="12" height="90" rx="4" fill="#3b82f6"/>
+      <circle cx="14" cy="28" r="4" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
+      <circle cx="14" cy="48" r="4" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
+      <circle cx="14" cy="68" r="4" fill="#fff" stroke="#3b82f6" stroke-width="1.5"/>
+      <line x1="24" y1="38" x2="72" y2="38" stroke="#93c5fd" stroke-width="1.5"/>
+      <line x1="24" y1="52" x2="72" y2="52" stroke="#93c5fd" stroke-width="1.5"/>
+      <line x1="24" y1="66" x2="72" y2="66" stroke="#93c5fd" stroke-width="1.5"/>
+      <line x1="24" y1="80" x2="60" y2="80" stroke="#93c5fd" stroke-width="1.5"/>
+      <text x="36" y="26" font-size="11" font-weight="900" fill="#3b82f6" font-family="Nunito,sans-serif">×÷+-</text>
+    </svg>
+
+    <!-- Estrellas flotantes -->
+    <div class="wb-star" style="top:12%;left:38%;font-size:22px;animation-delay:.3s">★</div>
+    <div class="wb-star" style="top:8%;right:35%;font-size:14px;animation-delay:.8s">★</div>
+    <div class="wb-star" style="bottom:20%;right:38%;font-size:26px;animation-delay:1.2s">★</div>
+    <div class="wb-star" style="top:35%;left:42%;font-size:12px;animation-delay:.5s">★</div>
+
+    <!-- ── CONTENIDO ── -->
+    <div class="wb-left">
+      <p class="wb-subtitle">Bienvenido a</p>
+      <h1 class="wb-title">
+        El mundo de las
+        <span class="wb-title-accent">Matemáticas</span>
+      </h1>
+      <p class="wb-grade">📚 Grado: 3° — ¡Aprende jugando!</p>
+
+      <button class="wb-btn" onclick="startApp()">
+        Empezar
+        <span class="wb-btn-arrow">→</span>
+      </button>
+
+      <div class="wb-ops">
+        <span class="wb-op">➕ Suma</span>
+        <span class="wb-op">➖ Resta</span>
+        <span class="wb-op">✖️ Multiplicación</span>
+        <span class="wb-op">➗ División</span>
+      </div>
+    </div>
+
+  </div>
+</div>
 
 <!-- ═══════════════ ADMIN BANNER ═══════════════ -->
 <div class="admin-banner" id="adminBanner">
@@ -1619,11 +1837,11 @@ function renderDesarrollo(data) {
 
   const mainImg   = normalizeImgUrl(data.mainImg || '');
   const typeConfig = {
-    pdf:   { badge:'badge-pdf',   icon:'📄', label:'PDF',    btnPrimary:'🎮 JUGAR', btnSecondary:null },
-    audio: { badge:'badge-audio', icon:'🎵', label:'Audio',  btnPrimary:'🎮 JUGAR', btnSecondary:null },
-    img:   { badge:'badge-img',   icon:'🖼️', label:'Imagen', btnPrimary:'🎮 JUGAR', btnSecondary:null },
-    video: { badge:'badge-video', icon:'🎬', label:'Video',  btnPrimary:'🎮 JUGAR', btnSecondary:null },
-    link:  { badge:'badge-link',  icon:'🔗', label:'Enlace', btnPrimary:'🎮 JUGAR', btnSecondary:null },
+    pdf:   { badge:'badge-pdf',   icon:'📄', label:'PDF',    btnPrimary:'⬇️ Descargar',     btnSecondary:'↗ Abrir' },
+    audio: { badge:'badge-audio', icon:'🎵', label:'Audio',  btnPrimary:'▶️ Reproducir',    btnSecondary:'⬇️ Descargar' },
+    img:   { badge:'badge-img',   icon:'🖼️', label:'Imagen', btnPrimary:'🔍 Ver imagen',    btnSecondary:null },
+    video: { badge:'badge-video', icon:'🎬', label:'Video',  btnPrimary:'▶️ Ver video',     btnSecondary:null },
+    link:  { badge:'badge-link',  icon:'🔗', label:'Enlace', btnPrimary:'↗ Ir al recurso',  btnSecondary:null },
   };
 
   // Always show 4 slots — fill with real resources, rest are empty placeholders
@@ -1658,7 +1876,7 @@ function renderDesarrollo(data) {
       <div class="res-item${i===0?' active':''}" onclick="selectResource(${i})" id="res-item-${i}">
         <div class="res-item-thumb">${thumbHtml}</div>
         <div class="res-item-body">
-          <a href="${r.url||'#'}" target="_blank" rel="noopener" class="res-item-play-btn" onclick="event.stopPropagation()">🎮 JUGAR</a>
+          <div class="res-item-badge">${cfg.icon} ${cfg.label}</div>
           <div class="res-item-title">${r.title||'Recurso'}</div>
         </div>
       </div>`;
@@ -1677,13 +1895,12 @@ function renderDesarrollo(data) {
 
   const mainTitleHtml = first
     ? `<div class="res-type-badge ${firstCfg.badge}" id="mainBadge">${firstCfg.icon} ${firstCfg.label}</div>
-       <div class="main-res-header">
-         <p class="main-res-title" id="mainTitle">${first.title||'Recurso'}</p>
-         <div class="main-res-actions" id="mainActions">
-           <a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn play-btn">${firstCfg.btnPrimary}</a>
-         </div>
-       </div>
-       <p class="main-res-desc"  id="mainDesc">${first.desc||''}</p>`
+       <p class="main-res-title" id="mainTitle">${first.title||'Recurso'}</p>
+       <p class="main-res-desc"  id="mainDesc">${first.desc||''}</p>
+       <div class="main-res-actions" id="mainActions">
+         <a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn primary">${firstCfg.btnPrimary}</a>
+         ${firstCfg.btnSecondary ? `<a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn">${firstCfg.btnSecondary}</a>` : ''}
+       </div>`
     : `<p class="main-res-desc" style="color:var(--gray-500);text-align:center;padding:10px 0" id="mainTitle">Selecciona un recurso de la barra izquierda</p>
        <div id="mainBadge" style="display:none"></div>
        <p id="mainDesc"></p>
@@ -1737,7 +1954,8 @@ function selectResource(idx) {
   if (badgeEl)   { badgeEl.className = `res-type-badge ${cfg.badge}`; badgeEl.textContent = `${cfg.icon} ${cfg.label}`; }
   if (actionsEl) {
     const resUrl = r.url || '#';
-    actionsEl.innerHTML = `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn play-btn">${cfg.btnPrimary}</a>`;
+    const sec = cfg.btnSecondary ? `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn">${cfg.btnSecondary}</a>` : '';
+    actionsEl.innerHTML = `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn primary">${cfg.btnPrimary}</a>${sec}`;
   }
 }
 
@@ -2322,6 +2540,18 @@ function showToast(msg, type = '', duration = 4000) {
   t.className = `toast ${type} show`;
   clearTimeout(toastTimer);
   toastTimer = setTimeout(() => t.classList.remove('show'), duration);
+}
+
+// ─────────────────────────────────────────────
+// WELCOME SCREEN
+// ─────────────────────────────────────────────
+function startApp() {
+  const screen = document.getElementById('welcomeScreen');
+  screen.classList.add('hiding');
+  // Remove from DOM after transition so it doesn't block clicks
+  setTimeout(() => {
+    screen.style.display = 'none';
+  }, 650);
 }
 
 // ─────────────────────────────────────────────
