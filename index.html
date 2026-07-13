@@ -168,68 +168,14 @@
       color: white;
     }
 
-    /* ═══════════════════════════════════════════════
-       HERO STRIP
-    ═══════════════════════════════════════════════ */
-    .hero-strip {
-      background: linear-gradient(135deg, var(--blue-900) 0%, var(--blue-700) 60%, #1a6cc7 100%);
-      padding: 40px 20px 56px;
-      position: relative;
-      overflow: hidden;
-    }
 
-    .hero-strip::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: radial-gradient(ellipse 70% 80% at 80% 50%, rgba(249,115,22,.15) 0%, transparent 70%);
-    }
-
-    .hero-strip-inner {
-      max-width: 1200px;
-      margin: 0 auto;
-      position: relative;
-    }
-
-    .hero-op-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255,255,255,.12);
-      border: 1px solid rgba(255,255,255,.2);
-      border-radius: 100px;
-      padding: 6px 14px;
-      font-size: .82rem;
-      font-weight: 600;
-      color: rgba(255,255,255,.85);
-      margin-bottom: 16px;
-      backdrop-filter: blur(8px);
-    }
-
-    .hero-title {
-      font-family: 'Nunito', sans-serif;
-      font-weight: 900;
-      font-size: clamp(1.8rem, 4vw, 3rem);
-      color: var(--white);
-      line-height: 1.1;
-      margin-bottom: 10px;
-    }
-
-    .hero-title .accent { color: var(--orange-400); }
-
-    .hero-desc {
-      font-size: 1rem;
-      color: rgba(255,255,255,.7);
-      max-width: 580px;
-      line-height: 1.6;
-    }
 
     /* ═══════════════════════════════════════════════
        MAIN CONTENT
     ═══════════════════════════════════════════════ */
     .content-wrap {
       max-width: 1200px;
-      margin: -28px auto 60px;
+      margin: 0 auto 60px;
       padding: 0 20px;
       position: relative;
     }
@@ -1119,7 +1065,6 @@
     ═══════════════════════════════════════════════ */
     @media (max-width: 900px) {
       .nav-brand-text { font-size: 1rem; }
-      .hero-strip { padding: 28px 16px 44px; }
       .content-wrap { margin-top: -20px; padding: 0 14px; }
       .card-body { padding: 18px; }
       .admin-panel-body { padding: 18px; }
@@ -1154,7 +1099,6 @@
       .tab-label { display: none; } /* hide text, show emoji only on very small screens */
 
       /* HERO */
-      .hero-strip { padding: 22px 14px 46px; }
       .hero-title { font-size: 1.55rem; }
       .hero-desc { font-size: .88rem; }
 
@@ -1484,14 +1428,6 @@
 </nav>
 
 <!-- ═══════════════ HERO ═══════════════ -->
-<div class="hero-strip">
-  <div class="hero-strip-inner">
-    <div class="hero-op-badge" id="heroBadge">➕ Operación activa</div>
-    <h1 class="hero-title" id="heroTitle">Aprendiendo la <span class="accent">Suma</span></h1>
-    <p class="hero-desc" id="heroDesc">Descubre el poder de unir cantidades. La suma es la base de todas las matemáticas que usamos en nuestra vida diaria.</p>
-  </div>
-</div>
-
 <!-- ═══════════════ MAIN CONTENT ═══════════════ -->
 <div class="content-wrap">
 
@@ -1938,12 +1874,7 @@ const emptyData = () => ({
 // Datos en memoria — se cargan desde localStorage o Google Sheets
 const appData = emptyData();
 
-const heroContent = {
-  suma:           { emoji:'➕', label:'Suma',           title:'Aprendiendo la <span class="accent">Suma</span>',               desc:'Descubre el poder de unir cantidades. La suma es la base de todas las matemáticas que usamos en nuestra vida diaria.' },
-  resta:          { emoji:'➖', label:'Resta',           title:'Dominando la <span class="accent">Resta</span>',               desc:'Aprende a encontrar diferencias y a restar con confianza. Una habilidad esencial para el día a día.' },
-  multiplicacion: { emoji:'✖️', label:'Multiplicación',  title:'Explorando la <span class="accent">Multiplicación</span>',     desc:'Descubre cómo multiplicar acelera la suma repetida y te abre las puertas a las matemáticas avanzadas.' },
-  division:       { emoji:'➗', label:'División',         title:'Comprendiendo la <span class="accent">División</span>',         desc:'Aprende a repartir y compartir en partes iguales. La división es la clave del pensamiento proporcional.' },
-};
+
 
 // Archivos pendientes de subida (admin)
 let pendingFiles = [];
@@ -1958,11 +1889,6 @@ function switchOp(op) {
   currentOp = op;
   document.querySelectorAll('.op-tab').forEach(t => t.classList.remove('active'));
   document.querySelector(`.op-tab[data-op="${op}"]`).classList.add('active');
-
-  const h = heroContent[op];
-  document.getElementById('heroBadge').textContent  = `${h.emoji} Operación activa`;
-  document.getElementById('heroTitle').innerHTML    = h.title;
-  document.getElementById('heroDesc').textContent   = h.desc;
 
   // Switch animated hero panels
   const heroMap = { suma:'hero-suma', resta:'hero-resta', multiplicacion:'hero-multi', division:'hero-div' };
