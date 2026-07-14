@@ -60,7 +60,7 @@
       z-index: 0;
       overflow: hidden;
     }
-    .bg-floats > * { position: absolute; opacity: .13; }
+    .bg-floats > * { position: absolute; }
 
     @keyframes bgbob1 { 0%,100%{transform:translateY(0) rotate(-8deg)}  50%{transform:translateY(-18px) rotate(-8deg)} }
     @keyframes bgbob2 { 0%,100%{transform:translateY(0) rotate(12deg)}  50%{transform:translateY(-14px) rotate(12deg)} }
@@ -490,8 +490,19 @@
     .res-item-body { padding: 5px 7px; }
     .res-item-badge { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; color: var(--gray-500); margin-bottom: 2px; }
     .res-item.active .res-item-badge { color: var(--blue-600); }
-    .res-item-title { font-size: .75rem; font-weight: 600; color: var(--gray-700); line-height: 1.3; }
+    .res-item-title { font-size: .75rem; font-weight: 600; color: var(--gray-700); line-height: 1.3; margin-bottom: 4px; }
     .res-item.active .res-item-title { color: var(--blue-700); }
+    .res-item-play {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 3px 8px; border-radius: 6px;
+      background: var(--orange-500); color: white;
+      font-size: .62rem; font-weight: 800;
+      font-family: 'Nunito', sans-serif;
+      text-decoration: none; margin-top: 2px;
+      transition: background var(--transition);
+      border: none; cursor: pointer;
+    }
+    .res-item-play:hover { background: var(--orange-600); }
 
     /* Main area */
     .main-img-box {
@@ -533,6 +544,24 @@
     .res-action-btn:hover { background: var(--gray-100); border-color: var(--gray-500); }
     .res-action-btn.primary { background: var(--blue-600); border-color: var(--blue-600); color: white; }
     .res-action-btn.primary:hover { background: var(--blue-700); }
+    .res-action-btn.jugar {
+      background: linear-gradient(135deg, var(--orange-500), var(--orange-600));
+      border-color: var(--orange-600); color: white;
+      font-size: .95rem; font-weight: 900;
+      padding: 10px 24px;
+      box-shadow: 0 4px 0 var(--orange-600);
+      transform: translateY(0);
+      transition: all .15s;
+      font-family: 'Nunito', sans-serif;
+    }
+    .res-action-btn.jugar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 0 var(--orange-600);
+    }
+    .res-action-btn.jugar:active {
+      transform: translateY(1px);
+      box-shadow: 0 2px 0 var(--orange-600);
+    }
 
     /* Badge tipo */
     .res-type-badge {
@@ -1254,6 +1283,12 @@
     .url-preview.visible { display: block; }
     .url-preview strong { color: var(--blue-600); }
   </style>
+  <!-- Firebase SDK -->
+  <script type="module">
+    import { initializeApp }                        from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+    import { getFirestore, doc, getDoc, setDoc }    from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+    window.__firebase_modules__ = { initializeApp, getFirestore, doc, getDoc, setDoc };
+  </script>
 </head>
 <body>
 
@@ -1261,7 +1296,7 @@
 <div class="bg-floats" aria-hidden="true">
 
   <!-- LÁPIZ izquierda arriba -->
-  <svg style="left:1%;top:18%;width:48px;animation:bgbob1 4.5s ease-in-out infinite" viewBox="0 0 36 160" xmlns="http://www.w3.org/2000/svg">
+  <svg style="left:3%;top:12%;width:58px;opacity:.45;animation:bgbob1 4.5s ease-in-out infinite" viewBox="0 0 36 160" xmlns="http://www.w3.org/2000/svg">
     <rect x="8" y="20" width="20" height="110" rx="2" fill="#f9c74f"/>
     <rect x="8" y="20" width="20" height="14" rx="2" fill="#fb923c"/>
     <rect x="8" y="8"  width="20" height="14" rx="3" fill="#fda4af"/>
@@ -1270,8 +1305,23 @@
     <polygon points="14,130 22,130 18,150" fill="#374151"/>
   </svg>
 
+  <!-- AGENDA izquierda centro-arriba -->
+  <svg style="left:2%;top:32%;width:88px;opacity:.42;animation:bgbob7 5.8s ease-in-out infinite;animation-delay:2s" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="4" width="16" height="92" rx="4" fill="#2563eb"/>
+    <rect x="12" y="4" width="60" height="92" rx="4" fill="#3b82f6"/>
+    <rect x="14" y="6" width="56" height="88" rx="3" fill="#eff6ff"/>
+    <line x1="20" y1="24" x2="64" y2="24" stroke="#bfdbfe" stroke-width="1.5"/>
+    <line x1="20" y1="34" x2="64" y2="34" stroke="#bfdbfe" stroke-width="1.5"/>
+    <line x1="20" y1="44" x2="64" y2="44" stroke="#bfdbfe" stroke-width="1.5"/>
+    <line x1="20" y1="54" x2="64" y2="54" stroke="#bfdbfe" stroke-width="1.5"/>
+    <line x1="20" y1="64" x2="50" y2="64" stroke="#bfdbfe" stroke-width="1.5"/>
+    <rect x="20" y="10" width="44" height="10" rx="2" fill="#93c5fd"/>
+    <text x="42" y="19" font-size="7" font-weight="900" fill="#1e40af" font-family="Nunito,sans-serif" text-anchor="middle">AGENDA</text>
+    <line x1="26" y1="4" x2="26" y2="96" stroke="#ef4444" stroke-width="1.5" opacity=".6"/>
+  </svg>
+
   <!-- REGLA izquierda centro -->
-  <svg style="left:-1%;top:45%;width:180px;animation:bgbob2 5.5s ease-in-out infinite;animation-delay:.8s" viewBox="0 0 200 42" xmlns="http://www.w3.org/2000/svg">
+  <svg style="left:1.5%;top:52%;width:190px;opacity:.40;animation:bgbob2 5.5s ease-in-out infinite;animation-delay:.8s" viewBox="0 0 200 42" xmlns="http://www.w3.org/2000/svg">
     <rect x="0" y="4" width="200" height="34" rx="5" fill="#4cc9f0"/>
     <rect x="0" y="4" width="200" height="34" rx="5" fill="none" stroke="#0ea5e9" stroke-width="2"/>
     <line x1="20"  y1="4" x2="20"  y2="16" stroke="white" stroke-width="1.5"/>
@@ -1289,7 +1339,7 @@
   </svg>
 
   <!-- CUADERNO verde izquierda abajo -->
-  <svg style="left:0.5%;top:68%;width:90px;animation:bgbob3 6s ease-in-out infinite;animation-delay:1.2s" viewBox="0 0 90 110" xmlns="http://www.w3.org/2000/svg">
+  <svg style="left:2.5%;top:72%;width:105px;opacity:.42;animation:bgbob3 6s ease-in-out infinite;animation-delay:1.2s" viewBox="0 0 90 110" xmlns="http://www.w3.org/2000/svg">
     <rect x="12" y="8" width="66" height="90" rx="6" fill="#4ade80"/>
     <rect x="18" y="8" width="60" height="90" rx="4" fill="#f0fdf4"/>
     <rect x="8"  y="8" width="12" height="90" rx="4" fill="#22c55e"/>
@@ -1303,74 +1353,8 @@
     <text x="44" y="26" font-size="11" font-weight="900" fill="#16a34a" font-family="Nunito,sans-serif" text-anchor="middle">2+3=5</text>
   </svg>
 
-  <!-- BOLSO/MOCHILA derecha arriba -->
-  <svg style="right:1%;top:15%;width:85px;animation:bgbob4 5s ease-in-out infinite;animation-delay:.4s" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
-    <!-- asa -->
-    <path d="M28 20 Q40 8 52 20" stroke="#818cf8" stroke-width="4" fill="none" stroke-linecap="round"/>
-    <!-- cuerpo -->
-    <rect x="8" y="20" width="64" height="68" rx="14" fill="#818cf8"/>
-    <!-- bolsillo frontal -->
-    <rect x="18" y="52" width="44" height="28" rx="8" fill="#6366f1"/>
-    <!-- cremallera -->
-    <line x1="18" y1="52" x2="62" y2="52" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round"/>
-    <circle cx="40" cy="52" r="3" fill="#e0e7ff"/>
-    <!-- decoración estrella -->
-    <text x="40" y="74" font-size="14" font-weight="900" fill="#c7d2fe" font-family="sans-serif" text-anchor="middle">★</text>
-    <!-- bolsillos laterales -->
-    <rect x="8"  y="30" width="10" height="30" rx="5" fill="#6366f1"/>
-    <rect x="62" y="30" width="10" height="30" rx="5" fill="#6366f1"/>
-  </svg>
-
-  <!-- TABLERO/PIZARRÓN derecha centro -->
-  <svg style="right:0.5%;top:42%;width:130px;animation:bgbob5 7s ease-in-out infinite;animation-delay:1.5s" viewBox="0 0 130 100" xmlns="http://www.w3.org/2000/svg">
-    <!-- marco -->
-    <rect x="0" y="0" width="130" height="85" rx="6" fill="#1e293b"/>
-    <rect x="5" y="5" width="120" height="75" rx="4" fill="#166534"/>
-    <!-- patas -->
-    <rect x="45" y="85" width="8" height="15" rx="2" fill="#374151"/>
-    <rect x="77" y="85" width="8" height="15" rx="2" fill="#374151"/>
-    <rect x="30" y="96" width="70" height="5" rx="2" fill="#374151"/>
-    <!-- contenido tablero -->
-    <text x="65" y="32" font-size="13" font-weight="900" fill="white" font-family="Nunito,sans-serif" text-anchor="middle">3 × 4 = 12</text>
-    <line x1="15" y1="45" x2="115" y2="45" stroke="rgba(255,255,255,.2)" stroke-width="1"/>
-    <text x="65" y="62" font-size="11" font-weight="700" fill="#86efac" font-family="Nunito,sans-serif" text-anchor="middle">10 − 4 = 6</text>
-    <!-- borrador esquina -->
-    <rect x="90" y="68" width="20" height="8" rx="2" fill="#fef3c7"/>
-  </svg>
-
-  <!-- SEGUNDO LÁPIZ derecha abajo -->
-  <svg style="right:1.5%;top:70%;width:40px;animation:bgbob6 4s ease-in-out infinite;animation-delay:.6s" viewBox="0 0 36 160" xmlns="http://www.w3.org/2000/svg">
-    <rect x="8" y="20" width="20" height="110" rx="2" fill="#f472b6"/>
-    <rect x="8" y="20" width="20" height="14" rx="2" fill="#ec4899"/>
-    <rect x="8" y="8"  width="20" height="14" rx="3" fill="#fde68a"/>
-    <rect x="8" y="18" width="20" height="4"        fill="#9ca3af"/>
-    <polygon points="8,130 28,130 18,155" fill="#fce7f3"/>
-    <polygon points="14,130 22,130 18,150" fill="#374151"/>
-  </svg>
-
-  <!-- AGENDA/LIBRO azul izquierda medio -->
-  <svg style="left:0.8%;top:32%;width:75px;animation:bgbob7 5.8s ease-in-out infinite;animation-delay:2s" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
-    <!-- lomo -->
-    <rect x="0" y="4" width="16" height="92" rx="4" fill="#2563eb"/>
-    <!-- tapa -->
-    <rect x="12" y="4" width="60" height="92" rx="4" fill="#3b82f6"/>
-    <!-- páginas -->
-    <rect x="14" y="6" width="56" height="88" rx="3" fill="#eff6ff"/>
-    <!-- líneas -->
-    <line x1="20" y1="24" x2="64" y2="24" stroke="#bfdbfe" stroke-width="1.5"/>
-    <line x1="20" y1="34" x2="64" y2="34" stroke="#bfdbfe" stroke-width="1.5"/>
-    <line x1="20" y1="44" x2="64" y2="44" stroke="#bfdbfe" stroke-width="1.5"/>
-    <line x1="20" y1="54" x2="64" y2="54" stroke="#bfdbfe" stroke-width="1.5"/>
-    <line x1="20" y1="64" x2="50" y2="64" stroke="#bfdbfe" stroke-width="1.5"/>
-    <!-- título -->
-    <rect x="20" y="10" width="44" height="10" rx="2" fill="#93c5fd"/>
-    <text x="42" y="19" font-size="7" font-weight="900" fill="#1e40af" font-family="Nunito,sans-serif" text-anchor="middle">AGENDA</text>
-    <!-- separador rojo -->
-    <line x1="26" y1="4" x2="26" y2="96" stroke="#ef4444" stroke-width="1.5" opacity=".5"/>
-  </svg>
-
-  <!-- CALCULADORA abajo izquierda -->
-  <svg style="left:1%;top:82%;width:65px;animation:bgbob8 6.5s ease-in-out infinite;animation-delay:.3s" viewBox="0 0 70 90" xmlns="http://www.w3.org/2000/svg">
+  <!-- CALCULADORA izquierda muy abajo -->
+  <svg style="left:3%;top:87%;width:75px;opacity:.40;animation:bgbob8 6.5s ease-in-out infinite;animation-delay:.3s" viewBox="0 0 70 90" xmlns="http://www.w3.org/2000/svg">
     <rect x="4" y="4" width="62" height="82" rx="8" fill="#a78bfa"/>
     <rect x="4" y="4" width="62" height="82" rx="8" fill="none" stroke="#7c3aed" stroke-width="2"/>
     <rect x="10" y="12" width="50" height="18" rx="4" fill="#ede9fe"/>
@@ -1395,8 +1379,54 @@
     <text x="52" y="70" font-size="6" font-weight="900" fill="#166534" font-family="Nunito,sans-serif" text-anchor="middle">=</text>
   </svg>
 
-  <!-- CUADERNO azul derecha abajo -->
-  <svg style="right:0.8%;top:82%;width:78px;animation:bgbob1 5.2s ease-in-out infinite;animation-delay:1s" viewBox="0 0 90 110" xmlns="http://www.w3.org/2000/svg">
+  <!-- MOCHILA derecha arriba -->
+  <svg style="right:3%;top:10%;width:100px;opacity:.44;animation:bgbob4 5s ease-in-out infinite;animation-delay:.4s" viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg">
+    <path d="M28 20 Q40 8 52 20" stroke="#818cf8" stroke-width="4" fill="none" stroke-linecap="round"/>
+    <rect x="8" y="20" width="64" height="68" rx="14" fill="#818cf8"/>
+    <rect x="18" y="52" width="44" height="28" rx="8" fill="#6366f1"/>
+    <line x1="18" y1="52" x2="62" y2="52" stroke="#a5b4fc" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="40" cy="52" r="3" fill="#e0e7ff"/>
+    <text x="40" y="74" font-size="14" font-weight="900" fill="#c7d2fe" font-family="sans-serif" text-anchor="middle">★</text>
+    <rect x="8"  y="30" width="10" height="30" rx="5" fill="#6366f1"/>
+    <rect x="62" y="30" width="10" height="30" rx="5" fill="#6366f1"/>
+  </svg>
+
+  <!-- TABLERO derecha centro-arriba -->
+  <svg style="right:2%;top:35%;width:155px;opacity:.42;animation:bgbob5 7s ease-in-out infinite;animation-delay:1.5s" viewBox="0 0 130 100" xmlns="http://www.w3.org/2000/svg">
+    <rect x="0" y="0" width="130" height="85" rx="6" fill="#1e293b"/>
+    <rect x="5" y="5" width="120" height="75" rx="4" fill="#166534"/>
+    <rect x="45" y="85" width="8" height="15" rx="2" fill="#374151"/>
+    <rect x="77" y="85" width="8" height="15" rx="2" fill="#374151"/>
+    <rect x="30" y="96" width="70" height="5" rx="2" fill="#374151"/>
+    <text x="65" y="32" font-size="13" font-weight="900" fill="white" font-family="Nunito,sans-serif" text-anchor="middle">3 × 4 = 12</text>
+    <line x1="15" y1="45" x2="115" y2="45" stroke="rgba(255,255,255,.25)" stroke-width="1"/>
+    <text x="65" y="62" font-size="11" font-weight="700" fill="#86efac" font-family="Nunito,sans-serif" text-anchor="middle">10 − 4 = 6</text>
+    <rect x="90" y="68" width="20" height="8" rx="2" fill="#fef3c7"/>
+  </svg>
+
+  <!-- COMPÁS derecha centro-bajo -->
+  <svg style="right:3%;top:60%;width:68px;opacity:.42;animation:bgbob4 7.5s ease-in-out infinite;animation-delay:2.5s" viewBox="0 0 60 120" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="30" cy="14" r="10" fill="#f97316" stroke="#ea580c" stroke-width="2"/>
+    <circle cx="30" cy="14" r="5"  fill="#fed7aa"/>
+    <line x1="30" y1="24" x2="14" y2="110" stroke="#f97316" stroke-width="3" stroke-linecap="round"/>
+    <line x1="30" y1="24" x2="46" y2="110" stroke="#ea580c" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="14" cy="110" r="4" fill="#374151"/>
+    <circle cx="46" cy="110" r="4" fill="#374151"/>
+    <line x1="20" y1="68" x2="40" y2="68" stroke="#fed7aa" stroke-width="2" stroke-linecap="round"/>
+  </svg>
+
+  <!-- LÁPIZ ROSADO derecha abajo -->
+  <svg style="right:2.5%;top:75%;width:50px;opacity:.43;animation:bgbob6 4s ease-in-out infinite;animation-delay:.6s" viewBox="0 0 36 160" xmlns="http://www.w3.org/2000/svg">
+    <rect x="8" y="20" width="20" height="110" rx="2" fill="#f472b6"/>
+    <rect x="8" y="20" width="20" height="14" rx="2" fill="#ec4899"/>
+    <rect x="8" y="8"  width="20" height="14" rx="3" fill="#fde68a"/>
+    <rect x="8" y="18" width="20" height="4"        fill="#9ca3af"/>
+    <polygon points="8,130 28,130 18,155" fill="#fce7f3"/>
+    <polygon points="14,130 22,130 18,150" fill="#374151"/>
+  </svg>
+
+  <!-- CUADERNO AZUL derecha muy abajo -->
+  <svg style="right:2%;top:87%;width:92px;opacity:.41;animation:bgbob1 5.2s ease-in-out infinite;animation-delay:1s" viewBox="0 0 90 110" xmlns="http://www.w3.org/2000/svg">
     <rect x="12" y="8" width="66" height="90" rx="6" fill="#60a5fa"/>
     <rect x="18" y="8" width="60" height="90" rx="4" fill="#eff6ff"/>
     <rect x="8"  y="8" width="12" height="90" rx="4" fill="#3b82f6"/>
@@ -1408,17 +1438,6 @@
     <line x1="24" y1="66" x2="72" y2="66" stroke="#93c5fd" stroke-width="1.5"/>
     <line x1="24" y1="80" x2="60" y2="80" stroke="#93c5fd" stroke-width="1.5"/>
     <text x="44" y="26" font-size="10" font-weight="900" fill="#1d4ed8" font-family="Nunito,sans-serif" text-anchor="middle">×÷+-</text>
-  </svg>
-
-  <!-- COMPÁS derecha centro-bajo -->
-  <svg style="right:1.2%;top:58%;width:55px;animation:bgbob4 7.5s ease-in-out infinite;animation-delay:2.5s" viewBox="0 0 60 120" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="30" cy="14" r="10" fill="#f97316" stroke="#ea580c" stroke-width="2"/>
-    <circle cx="30" cy="14" r="5"  fill="#fed7aa"/>
-    <line x1="30" y1="24" x2="14" y2="110" stroke="#f97316" stroke-width="3" stroke-linecap="round"/>
-    <line x1="30" y1="24" x2="46" y2="110" stroke="#ea580c" stroke-width="3" stroke-linecap="round"/>
-    <circle cx="14" cy="110" r="4" fill="#374151"/>
-    <circle cx="46" cy="110" r="4" fill="#374151"/>
-    <line x1="20" y1="68" x2="40" y2="68" stroke="#fed7aa" stroke-width="2" stroke-linecap="round"/>
   </svg>
 
 </div>
@@ -2029,18 +2048,22 @@
 ═══════════════════════════════════════ -->
 <script>
 // ─────────────────────────────────────────────
-// CONFIGURACIÓN GOOGLE APPS SCRIPT
+// FIREBASE CONFIGURATION
 // ─────────────────────────────────────────────
-/**
- * Reemplaza esta URL por la de tu Google Apps Script publicado como Web App.
- * Pasos para obtenerla:
- * 1. Crea un script en script.google.com vinculado a tu Google Sheet.
- * 2. Implementa las funciones doGet() y doPost() en el script.
- * 3. Publica como "Web App" → Acceso: "Cualquier usuario".
- * 4. Copia la URL de implementación aquí.
- */
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVcG04tcPqm6RZ9JTPwq6wvzdeLEql4tBh1yzQiyNIFJ1aINDnWqMBlv3GaVXDAE6MHg/exec";
-// Clave usada en localStorage para persistencia local
+const firebaseConfig = {
+  apiKey:            "AIzaSyAkFycF52xojLIdE84SNtAGS7qSupGMnWw",
+  authDomain:        "aula-viva-betan.firebaseapp.com",
+  projectId:         "aula-viva-betan",
+  storageBucket:     "aula-viva-betan.firebasestorage.app",
+  messagingSenderId: "605604658143",
+  appId:             "1:605604658143:web:1194d1777a7cabc1cca26a"
+};
+
+// Firebase instances (initialized on DOMContentLoaded)
+let fbApp = null;
+let fbDb  = null;
+
+// LocalStorage key as offline cache
 const LS_KEY = 'aventuras_mat_data_v1';
 
 // ─────────────────────────────────────────────
@@ -2148,11 +2171,11 @@ function renderDesarrollo(data) {
 
   const mainImg   = normalizeImgUrl(data.mainImg || '');
   const typeConfig = {
-    pdf:   { badge:'badge-pdf',   icon:'📄', label:'PDF',    btnPrimary:'⬇️ Descargar',     btnSecondary:'↗ Abrir' },
-    audio: { badge:'badge-audio', icon:'🎵', label:'Audio',  btnPrimary:'▶️ Reproducir',    btnSecondary:'⬇️ Descargar' },
-    img:   { badge:'badge-img',   icon:'🖼️', label:'Imagen', btnPrimary:'🔍 Ver imagen',    btnSecondary:null },
-    video: { badge:'badge-video', icon:'🎬', label:'Video',  btnPrimary:'▶️ Ver video',     btnSecondary:null },
-    link:  { badge:'badge-link',  icon:'🔗', label:'Enlace', btnPrimary:'↗ Ir al recurso',  btnSecondary:null },
+    pdf:   { badge:'badge-pdf',   icon:'📄', label:'PDF',    btnPrimary:'⬇️ Descargar',    btnSecondary:'↗ Abrir' },
+    audio: { badge:'badge-audio', icon:'🎵', label:'Audio',  btnPrimary:'▶️ Reproducir',   btnSecondary:'⬇️ Descargar' },
+    img:   { badge:'badge-img',   icon:'🖼️', label:'Imagen', btnPrimary:'🔍 Ver imagen',   btnSecondary:null },
+    video: { badge:'badge-video', icon:'🎬', label:'Video',  btnPrimary:'▶️ Ver video',    btnSecondary:null },
+    link:  { badge:'badge-link',  icon:'🔗', label:'Enlace', btnPrimary:'🎮 ¡JUGAR!',      btnSecondary:'↗ Abrir' },
   };
 
   // Always show 4 slots — fill with real resources, rest are empty placeholders
@@ -2183,12 +2206,16 @@ function renderDesarrollo(data) {
     const thumbHtml = thumbSrc
       ? `<img src="${thumbSrc}" alt="${r.title||''}" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" /><span style="font-size:1.4rem;display:none;align-items:center;justify-content:center;width:100%;height:100%">${cfg.icon}</span>`
       : `<span style="font-size:1.4rem">${cfg.icon}</span>`;
+    const isLink = (r.type || 'link') === 'link';
+    const smallBtn = isLink
+      ? `<a href="${r.url||'#'}" target="_blank" rel="noopener" class="res-item-play" onclick="event.stopPropagation()">🎮 JUGAR</a>`
+      : `<a href="${r.url||'#'}" target="_blank" rel="noopener" class="res-item-play" style="background:var(--blue-600)" onclick="event.stopPropagation()">${cfg.icon} Abrir</a>`;
     return `
       <div class="res-item${i===0?' active':''}" onclick="selectResource(${i})" id="res-item-${i}">
         <div class="res-item-thumb">${thumbHtml}</div>
         <div class="res-item-body">
-          <div class="res-item-badge">${cfg.icon} ${cfg.label}</div>
           <div class="res-item-title">${r.title||'Recurso'}</div>
+          ${smallBtn}
         </div>
       </div>`;
   }).join('');
@@ -2204,14 +2231,15 @@ function renderDesarrollo(data) {
         <p>El docente aún no ha cargado<br>la imagen principal</p>
       </div>`;
 
+  const isFirstLink = (first?.type || 'link') === 'link';
   const mainTitleHtml = first
-    ? `<div class="res-type-badge ${firstCfg.badge}" id="mainBadge">${firstCfg.icon} ${firstCfg.label}</div>
-       <p class="main-res-title" id="mainTitle">${first.title||'Recurso'}</p>
-       <p class="main-res-desc"  id="mainDesc">${first.desc||''}</p>
-       <div class="main-res-actions" id="mainActions">
-         <a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn primary">${firstCfg.btnPrimary}</a>
+    ? `<p class="main-res-title" id="mainTitle">${first.title||'Recurso'}</p>
+       <div class="main-res-actions" id="mainActions" style="margin-bottom:10px">
+         <a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn ${isFirstLink?'jugar':'primary'}">${firstCfg.btnPrimary}</a>
          ${firstCfg.btnSecondary ? `<a href="${first.url||'#'}" target="_blank" rel="noopener" class="res-action-btn">${firstCfg.btnSecondary}</a>` : ''}
-       </div>`
+       </div>
+       <p class="main-res-desc" id="mainDesc">${first.desc||''}</p>
+       <div id="mainBadge" style="display:none"></div>`
     : `<p class="main-res-desc" style="color:var(--gray-500);text-align:center;padding:10px 0" id="mainTitle">Selecciona un recurso de la barra izquierda</p>
        <div id="mainBadge" style="display:none"></div>
        <p id="mainDesc"></p>
@@ -2262,11 +2290,13 @@ function selectResource(idx) {
 
   if (titleEl)   titleEl.textContent   = r.title || 'Recurso';
   if (descEl)    descEl.textContent    = r.desc  || '';
-  if (badgeEl)   { badgeEl.className = `res-type-badge ${cfg.badge}`; badgeEl.textContent = `${cfg.icon} ${cfg.label}`; }
+  if (badgeEl)   { badgeEl.style.display = 'none'; }
   if (actionsEl) {
     const resUrl = r.url || '#';
+    const btnClass = (r.type || 'link') === 'link' ? 'jugar' : 'primary';
     const sec = cfg.btnSecondary ? `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn">${cfg.btnSecondary}</a>` : '';
-    actionsEl.innerHTML = `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn primary">${cfg.btnPrimary}</a>${sec}`;
+    actionsEl.style.marginBottom = '10px';
+    actionsEl.innerHTML = `<a href="${resUrl}" target="_blank" rel="noopener" class="res-action-btn ${btnClass}">${cfg.btnPrimary}</a>${sec}`;
   }
 }
 
@@ -2319,14 +2349,35 @@ function renderCierre(data) {
 }
 
 // ─────────────────────────────────────────────
-// PERSISTENCIA LOCAL (localStorage)
+// FIREBASE — INIT
+// ─────────────────────────────────────────────
+function initFirebase() {
+  return new Promise((resolve) => {
+    // Wait for module to load
+    const tryInit = () => {
+      if (window.__firebase_modules__) {
+        const { initializeApp, getFirestore } = window.__firebase_modules__;
+        fbApp = initializeApp(firebaseConfig);
+        fbDb  = getFirestore(fbApp);
+        console.log('[AventurasMat] Firebase inicializado ✅');
+        resolve(true);
+      } else {
+        setTimeout(tryInit, 100);
+      }
+    };
+    tryInit();
+  });
+}
+
+// ─────────────────────────────────────────────
+// PERSISTENCIA LOCAL (cache offline)
 // ─────────────────────────────────────────────
 function saveToLocalStorage() {
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(appData));
     return true;
   } catch(e) {
-    console.warn('[AventurasMat] No se pudo guardar en localStorage:', e);
+    console.warn('[AventurasMat] localStorage error:', e);
     return false;
   }
 }
@@ -2336,88 +2387,92 @@ function loadFromLocalStorage() {
     const raw = localStorage.getItem(LS_KEY);
     if (!raw) return false;
     const saved = JSON.parse(raw);
-    // Merge saved data into appData safely
-    const ops = ['suma','resta','multiplicacion','division'];
+    const ops   = ['suma','resta','multiplicacion','division'];
     const steps = ['inicio','desarrollo','cierre'];
-    ops.forEach(op => {
-      steps.forEach(step => {
-        if (saved[op] && saved[op][step]) {
-          appData[op][step] = saved[op][step];
-        }
-      });
-    });
+    ops.forEach(op => steps.forEach(step => {
+      if (saved[op]?.[step]) appData[op][step] = saved[op][step];
+    }));
     return true;
   } catch(e) {
-    console.warn('[AventurasMat] No se pudo leer localStorage:', e);
     return false;
   }
 }
 
 // ─────────────────────────────────────────────
-// GOOGLE SHEETS — API
+// FIREBASE — LEER DATOS
 // ─────────────────────────────────────────────
 async function fetchDataFromSheets() {
+  // Load local cache immediately so UI isn't blank
   const hasLocal = loadFromLocalStorage();
-
-  // Siempre renderizar con lo que tengamos (local o vacío)
   renderCurrentPanel();
 
-  if (SCRIPT_URL === "TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI") {
-    if (hasLocal) showToast('📂 Datos cargados desde almacenamiento local', 'success');
-    return;
-  }
-
-  // Intentar cargar desde Google Sheets
   try {
-    const resp = await fetch(`${SCRIPT_URL}?action=getData`, {
-      method: 'GET',
-      mode: 'cors',
-    });
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const text = await resp.text();
-    const json = JSON.parse(text);
-
-    if (json.error) throw new Error(json.error);
+    await initFirebase();
+    const { doc, getDoc } = window.__firebase_modules__;
 
     const ops   = ['suma','resta','multiplicacion','division'];
     const steps = ['inicio','desarrollo','cierre'];
-    ops.forEach(op => steps.forEach(step => {
-      if (json[op] && json[op][step] && Object.keys(json[op][step]).length > 0) {
-        appData[op][step] = json[op][step];
+
+    for (const op of ops) {
+      for (const step of steps) {
+        const ref      = doc(fbDb, 'aventuras', `${op}_${step}`);
+        const snapshot = await getDoc(ref);
+        if (snapshot.exists()) {
+          const data = snapshot.data();
+          if (Object.keys(data).length > 0) {
+            appData[op][step] = data;
+            if (step === 'desarrollo' && data.resources) {
+              console.log(`[AventurasMat] ${op}/${step}: ${data.resources.length} recursos`);
+            }
+          }
+        }
       }
-    }));
+    }
+
     saveToLocalStorage();
     renderCurrentPanel();
-    showToast('✅ Datos sincronizados con Google Sheets', 'success');
-  } catch (err) {
-    console.warn('[AventurasMat] Sheets fetch error:', err.message);
-    renderCurrentPanel(); // Re-render con datos locales si los hay
+    showToast('✅ Datos cargados desde Firebase', 'success');
+  } catch(err) {
+    console.warn('[AventurasMat] Firebase read error:', err.message);
+    if (hasLocal) {
+      showToast('📂 Usando datos en caché local', '');
+    }
   }
 }
 
+// ─────────────────────────────────────────────
+// FIREBASE — GUARDAR DATOS
+// ─────────────────────────────────────────────
 async function saveDataToSheets() {
   mergeAdminFormToAppData();
-  const localOk = saveToLocalStorage();
+  saveToLocalStorage();
   renderCurrentPanel();
-
-  if (SCRIPT_URL === "TU_URL_DE_GOOGLE_APPS_SCRIPT_AQUI") {
-    showToast(localOk ? '💾 ¡Guardado localmente!' : '⚠️ No se pudo guardar.', localOk ? 'success' : 'error');
-    return;
-  }
 
   const saveBtn = document.getElementById('saveBtn');
   if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = '⏳ Guardando...'; }
 
   const payload = buildAdminPayload();
+  // Strip base64 (too large for Firestore 1MB doc limit)
+  if (payload.resources) {
+    payload.resources = payload.resources.map(r => {
+      const clean = Object.assign({}, r);
+      if (clean.thumb?.startsWith('data:')) clean.thumb = '';
+      return clean;
+    });
+  }
+  if (payload.mainImg?.startsWith('data:')) payload.mainImg = '';
 
   // Si el payload contiene imagen base64, es demasiado grande para GET
-  // Usamos un iframe oculto como puente (técnica clásica para Apps Script + CORS)
   try {
-    await sendToAppsScript(adminOp, adminStep, payload);
-    showToast('✅ ¡Guardado en Google Sheets!', 'success');
-  } catch (err) {
-    console.warn('[AventurasMat] Sheets error:', err.message);
-    showToast('💾 Guardado local ✓ — abre la consola para ver el error', '');
+    await initFirebase();
+    const { doc, setDoc } = window.__firebase_modules__;
+    const ref = doc(fbDb, 'aventuras', `${adminOp}_${adminStep}`);
+    await setDoc(ref, payload);
+    showToast('✅ ¡Guardado en Firebase!', 'success');
+    console.log(`[AventurasMat] Guardado: ${adminOp}/${adminStep}`);
+  } catch(err) {
+    console.error('[AventurasMat] Firebase write error:', err.message);
+    showToast('💾 Guardado local ✓ — error Firebase: ' + err.message, '');
   } finally {
     if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Guardar cambios'; }
   }
@@ -2425,49 +2480,7 @@ async function saveDataToSheets() {
 
 // Envía datos a Apps Script usando un form POST en iframe oculto
 // Esto evita el bloqueo CORS que afecta a fetch() desde GitHub Pages
-function sendToAppsScript(op, step, payload) {
-  return new Promise((resolve, reject) => {
-    // Limpiar imágenes base64 (demasiado pesadas para URL params)
-    const cleanPayload = JSON.parse(JSON.stringify(payload));
-    if (cleanPayload.mainImg && cleanPayload.mainImg.startsWith('data:')) {
-      cleanPayload.mainImg = '';
-    }
-    if (cleanPayload.resources) {
-      cleanPayload.resources = cleanPayload.resources.map(r => {
-        if (r.thumb && r.thumb.startsWith('data:')) r.thumb = '';
-        return r;
-      });
-    }
-
-    const url = SCRIPT_URL
-      + '?action=saveData'
-      + '&op='   + encodeURIComponent(op)
-      + '&step=' + encodeURIComponent(step)
-      + '&data=' + encodeURIComponent(JSON.stringify(cleanPayload));
-
-    // Primero intentar con fetch (funciona en muchos casos)
-    fetch(url, { method: 'GET', mode: 'no-cors' })
-      .then(() => {
-        // no-cors siempre resuelve aunque no podamos leer la respuesta
-        // Verificar con GET que sí se guardó
-        setTimeout(() => resolve(), 1000);
-      })
-      .catch(() => {
-        // Fallback: iframe oculto
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-        let done = false;
-        const timer = setTimeout(() => {
-          if (!done) { done = true; document.body.removeChild(iframe); resolve(); }
-        }, 4000);
-        iframe.onerror = () => {
-          if (!done) { done = true; clearTimeout(timer); document.body.removeChild(iframe); reject(new Error('Error de red')); }
-        };
-        iframe.src = url;
-      });
-  });
-}
+// Firebase handles all persistence — no Apps Script needed
 
 function buildAdminPayload() {
   if (adminStep === 'inicio') {
@@ -2591,7 +2604,7 @@ function populateAdminForm() {
   }
 }
 
-// Public alias for button
+// Public aliases for admin buttons
 function saveToSheets()  { saveDataToSheets(); }
 function loadFromSheets(){ fetchDataFromSheets(); }
 
@@ -2868,7 +2881,13 @@ function startApp() {
 // ─────────────────────────────────────────────
 // INIT
 // ─────────────────────────────────────────────
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  // Pre-initialize Firebase so first load is fast
+  try {
+    await initFirebase();
+  } catch(e) {
+    console.warn('[AventurasMat] Firebase pre-init failed:', e.message);
+  }
   fetchDataFromSheets();
 });
 </script>
