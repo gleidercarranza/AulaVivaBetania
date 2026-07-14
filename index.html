@@ -2189,17 +2189,8 @@ function renderDesarrollo(data) {
   // Build sidebar items (always 4)
   const sideItems = slots.map((r, i) => {
     if (!r) {
-      // Empty slot
-      return `
-        <div class="res-item res-item-empty" id="res-item-${i}">
-          <div class="res-item-thumb" style="background:var(--gray-100)">
-            <span style="font-size:1.2rem;opacity:.3">📋</span>
-          </div>
-          <div class="res-item-body">
-            <div class="res-item-badge" style="color:var(--gray-300)">— vacío</div>
-            <div class="res-item-title" style="color:var(--gray-300)">Sin recurso</div>
-          </div>
-        </div>`;
+      // Empty slot — hidden, not shown
+      return `<div class="res-item res-item-empty" id="res-item-${i}" style="display:none"></div>`;
     }
     const cfg = typeConfig[r.type] || typeConfig['link'];
     const thumbSrc = normalizeImgUrl(r.thumb || '');
@@ -2467,12 +2458,19 @@ async function saveDataToSheets() {
     await initFirebase();
     const { doc, setDoc } = window.__firebase_modules__;
     const ref = doc(fbDb, 'aventuras', `${adminOp}_${adminStep}`);
+
+    // Log exactly what we're saving
+    if (adminStep === 'desarrollo') {
+      console.log(`[Firebase] Guardando ${adminOp}/desarrollo con ${payload.resources?.length || 0} recursos:`);
+      (payload.resources || []).forEach((r, i) => console.log(`  Recurso ${i+1}: "${r.title}" — ${r.url}`));
+    }
+
     await setDoc(ref, payload);
     showToast('✅ ¡Guardado en Firebase!', 'success');
-    console.log(`[AventurasMat] Guardado: ${adminOp}/${adminStep}`);
+    console.log(`[Firebase] ✅ Guardado: ${adminOp}/${adminStep}`);
   } catch(err) {
-    console.error('[AventurasMat] Firebase write error:', err.message);
-    showToast('💾 Guardado local ✓ — error Firebase: ' + err.message, '');
+    console.error('[Firebase] Error:', err.message);
+    showToast('❌ Error Firebase: ' + err.message, 'error');
   } finally {
     if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Guardar cambios'; }
   }
@@ -2743,12 +2741,16 @@ function addResource() {
 
   if (!title) { showToast('⚠️ Agrega un título al recurso', 'error'); return; }
   if (!url)   { showToast('⚠️ Agrega la URL del recurso', 'error');   return; }
+  if (pendingResources.length >= 4) {
+    showToast('⚠️ Máximo 4 recursos por sección. Elimina uno para agregar otro.', 'error');
+    return;
+  }
 
   const resource = { title, type, desc, url, thumb: currentThumbData };
   pendingResources.push(resource);
   renderAdminResList();
   clearResForm();
-  showToast('✅ Recurso agregado. Guarda los cambios para publicar.', 'success');
+  showToast(`✅ Recurso ${pendingResources.length}/4 agregado. Guarda los cambios para publicar.`, 'success');
 }
 
 function removeResource(idx) {
@@ -2759,17 +2761,34 @@ function removeResource(idx) {
 function renderAdminResList() {
   const container = document.getElementById('res-list-admin');
   if (!container) return;
-  if (!pendingResources.length) { container.innerHTML = ''; return; }
 
   const typeIcons = { pdf:'📄', audio:'🎵', img:'🖼️', video:'🎬', link:'🔗' };
-  container.innerHTML = pendingResources.map((r, i) => `
+
+  // Counter badge
+  const count = pendingResources.length;
+  const counterHtml = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <span style="font-size:.8rem;font-weight:700;color:var(--gray-600,#4b5563)">
+        Recursos agregados: <strong style="color:${count===4?'var(--orange-500)':'var(--blue-600)'}">
+        ${count}/4</strong>
+      </span>
+      ${count < 4 ? `<span style="font-size:.75rem;color:var(--gray-400)">Puedes agregar ${4-count} más</span>` : 
+                    `<span style="font-size:.75rem;color:var(--orange-500);font-weight:700">✅ Completo</span>`}
+    </div>`;
+
+  if (!pendingResources.length) {
+    container.innerHTML = counterHtml;
+    return;
+  }
+
+  container.innerHTML = counterHtml + pendingResources.map((r, i) => `
     <div class="res-admin-item">
       <div class="res-admin-thumb">
-        ${r.thumb ? `<img src="${r.thumb}" alt="${r.title}" />` : `<span>${typeIcons[r.type] || '🔗'}</span>`}
+        ${r.thumb ? `<img src="${normalizeImgUrl(r.thumb)}" alt="${r.title}" />` : `<span>${typeIcons[r.type] || '🔗'}</span>`}
       </div>
       <div class="res-admin-info">
-        <strong>${r.title}</strong>
-        <span>${r.type.toUpperCase()} · ${r.url.substring(0,45)}${r.url.length > 45 ? '…' : ''}</span>
+        <strong>${i+1}. ${r.title}</strong>
+        <span>${r.type.toUpperCase()} · ${r.url.substring(0,40)}${r.url.length > 40 ? '…' : ''}</span>
       </div>
       <button class="res-admin-del" onclick="removeResource(${i})" title="Eliminar">✕</button>
     </div>`).join('');
