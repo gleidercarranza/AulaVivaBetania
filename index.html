@@ -2393,14 +2393,13 @@ function loadFromLocalStorage() {
 // FIREBASE — LEER DATOS
 // ─────────────────────────────────────────────
 async function fetchDataFromSheets() {
-  // Load local cache immediately so UI isn't blank
-  const hasLocal = loadFromLocalStorage();
+  // Show cached data immediately while Firebase loads
+  loadFromLocalStorage();
   renderCurrentPanel();
 
   try {
     await initFirebase();
     const { doc, getDoc } = window.__firebase_modules__;
-
     const ops   = ['suma','resta','multiplicacion','division'];
     const steps = ['inicio','desarrollo','cierre'];
 
@@ -2409,25 +2408,24 @@ async function fetchDataFromSheets() {
         const ref      = doc(fbDb, 'aventuras', `${op}_${step}`);
         const snapshot = await getDoc(ref);
         if (snapshot.exists()) {
-          const data = snapshot.data();
-          if (Object.keys(data).length > 0) {
-            appData[op][step] = data;
-            if (step === 'desarrollo' && data.resources) {
-              console.log(`[AventurasMat] ${op}/${step}: ${data.resources.length} recursos`);
-            }
+          // Firebase data always wins over local cache
+          appData[op][step] = snapshot.data();
+          if (step === 'desarrollo') {
+            const n = appData[op][step].resources?.length || 0;
+            console.log(`[Firebase] ${op}/${step}: ${n} recursos`);
           }
         }
       }
     }
 
+    // Update local cache with fresh Firebase data
     saveToLocalStorage();
     renderCurrentPanel();
     showToast('✅ Datos cargados desde Firebase', 'success');
+
   } catch(err) {
-    console.warn('[AventurasMat] Firebase read error:', err.message);
-    if (hasLocal) {
-      showToast('📂 Usando datos en caché local', '');
-    }
+    console.warn('[Firebase] Read error:', err.message);
+    showToast('📂 Usando caché local — ' + err.message, '');
   }
 }
 
@@ -2674,10 +2672,14 @@ function previewYoutubeUrl(url) {
 
 // Thumb mode toggle
 function setThumbMode(mode) {
-  document.getElementById('thumbModeUpload').classList.toggle('active', mode === 'upload');
-  document.getElementById('thumbModeUrl').classList.toggle('active', mode === 'url');
-  document.getElementById('thumbUploadZone').style.display = mode === 'upload' ? 'flex' : 'none';
-  document.getElementById('thumbUrlZone').style.display    = mode === 'url'    ? 'block' : 'none';
+  const mu = document.getElementById('thumbModeUpload');
+  const mv = document.getElementById('thumbModeUrl');
+  const uz = document.getElementById('thumbUploadZone');
+  const tz = document.getElementById('thumbUrlZone');
+  if (mu) mu.classList.toggle('active', mode === 'upload');
+  if (mv) mv.classList.toggle('active', mode === 'url');
+  if (uz) uz.style.display = mode === 'upload' ? 'flex' : 'none';
+  if (tz) tz.style.display = mode === 'url'    ? 'block' : 'none';
 }
 
 // Handle thumb file upload → base64
@@ -2689,7 +2691,7 @@ function handleThumbFile(file) {
   }
   const reader = new FileReader();
   reader.onload = (e) => {
-    currentThumbData = e.target.result; // base64
+    currentThumbData = e.target.result;
     showThumbPreview(currentThumbData);
   };
   reader.readAsDataURL(file);
@@ -2697,7 +2699,7 @@ function handleThumbFile(file) {
 
 // Handle thumb URL
 function previewThumbUrl(url) {
-  if (!url.trim()) { clearThumb(); return; }
+  if (!url || !url.trim()) { clearThumb(); return; }
   currentThumbData = url.trim();
   showThumbPreview(currentThumbData);
 }
@@ -2716,19 +2718,32 @@ function showThumbPreview(src) {
 
 function clearThumb() {
   currentThumbData = '';
-  document.getElementById('thumbPreviewBox').style.display = 'none';
-  document.getElementById('thumbPreviewImg').src = '';
-  document.getElementById('thumbUrlInput') && (document.getElementById('thumbUrlInput').value = '');
-  // restore upload zone
-  const mode = document.getElementById('thumbModeUpload').classList.contains('active') ? 'upload' : 'url';
-  setThumbMode(mode);
+  const box = document.getElementById('thumbPreviewBox');
+  const img = document.getElementById('thumbPreviewImg');
+  const inp = document.getElementById('thumbUrlInput');
+  const mu  = document.getElementById('thumbModeUpload');
+  if (box) box.style.display = 'none';
+  if (img) img.src = '';
+  if (inp) inp.value = '';
+  // Only call setThumbMode if the elements exist
+  if (mu) {
+    const mode = mu.classList.contains('active') ? 'upload' : 'url';
+    setThumbMode(mode);
+  }
 }
 
-function thumbDragOver(e) { e.preventDefault(); document.getElementById('thumbUploadZone').style.borderColor='var(--blue-500)'; }
-function thumbDragLeave()  { document.getElementById('thumbUploadZone').style.borderColor=''; }
+function thumbDragOver(e) {
+  e.preventDefault();
+  const uz = document.getElementById('thumbUploadZone');
+  if (uz) uz.style.borderColor = 'var(--blue-500)';
+}
+function thumbDragLeave() {
+  const uz = document.getElementById('thumbUploadZone');
+  if (uz) uz.style.borderColor = '';
+}
 function thumbDrop(e) {
   e.preventDefault();
-  document.getElementById('thumbUploadZone').style.borderColor = '';
+  thumbDragLeave();
   if (e.dataTransfer.files[0]) handleThumbFile(e.dataTransfer.files[0]);
 }
 
@@ -2795,10 +2810,14 @@ function renderAdminResList() {
 }
 
 function clearResForm() {
-  document.getElementById('new-res-title').value = '';
-  document.getElementById('new-res-type').value  = 'link';
-  document.getElementById('new-res-desc').value  = '';
-  document.getElementById('new-res-url').value   = '';
+  const t = document.getElementById('new-res-title');
+  const ty = document.getElementById('new-res-type');
+  const d = document.getElementById('new-res-desc');
+  const u = document.getElementById('new-res-url');
+  if (t)  t.value  = '';
+  if (ty) ty.value = 'link';
+  if (d)  d.value  = '';
+  if (u)  u.value  = '';
   clearThumb();
 }
 
